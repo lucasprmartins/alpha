@@ -79,6 +79,7 @@
       "dependencies": {
         "@app/auth": "workspace:*",
         "@app/db": "workspace:*",
+        "@app/domain": "workspace:*",
         "@orpc/client": "^1.13.6",
         "@orpc/openapi": "^1.13.6",
         "@orpc/server": "^1.13.6",
@@ -115,6 +116,7 @@
     "modules/db": {
       "name": "@app/db",
       "dependencies": {
+        "@app/domain": "workspace:*",
         "dotenv": "^17.3.1",
         "drizzle-orm": "^0.45.1",
         "zod": "catalog:",
