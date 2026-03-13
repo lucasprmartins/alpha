@@ -12,7 +12,8 @@
     "rules": {
       "correctness": {
         "useImportExtensions": "off",
-        "noUnresolvedImports": "off"
+        "noUnresolvedImports": "off",
+        "noUndeclaredDependencies": "off"
       },
       "style": {
         "useFilenamingConvention": "off"
