@@ -1,0 +1,11 @@
+.git
+.turbo
+.claude
+node_modules
+**/dist
+**/server
+**/coverage
+**/.turbo
+*.md
+scripts
+n8n
