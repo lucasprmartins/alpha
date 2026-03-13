@@ -3,6 +3,10 @@
   "type": "module",
   "private": true,
   "packageManager": "bun@1.3.10",
+  "workspaces": [
+    "server",
+    "shared/*"
+  ],
   "scripts": {
     "lint": "ultracite check",
     "lint:fix": "ultracite fix"
