@@ -1,5 +1,5 @@
 import type { Icon } from "@phosphor-icons/react";
-import { HouseIcon } from "@phosphor-icons/react";
+import { CheckSquareOffsetIcon, HouseIcon } from "@phosphor-icons/react";
 
 export interface MenuItem {
   icon: Icon;
@@ -9,6 +9,7 @@ export interface MenuItem {
 
 export const menuItems: MenuItem[] = [
   { label: "Dashboard", icon: HouseIcon, to: "/dashboard" },
+  { label: "Tarefas", icon: CheckSquareOffsetIcon, to: "/tasks" },
 ];
 
 export const NAV_ACTIVE_CLASS =
