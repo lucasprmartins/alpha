@@ -5,6 +5,9 @@
     "rules": {
       "correctness": {
         "useImportExtensions": "off"
+      },
+      "style": {
+        "useFilenamingConvention": "off"
       }
     }
   }
