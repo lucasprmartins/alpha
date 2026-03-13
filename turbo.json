@@ -12,6 +12,10 @@
     "typecheck": {
       "dependsOn": ["^typecheck"],
       "inputs": ["**/*.{ts,tsx}", "tsconfig.json"]
-    }
+    },
+    "db:generate": { "cache": false, "persistent": true },
+    "db:migrate": { "cache": false, "persistent": true },
+    "db:push": { "cache": false, "persistent": true },
+    "db:studio": { "cache": false, "persistent": true }
   }
 }
