@@ -27,13 +27,13 @@ const proximosPassos = [
 
 export function DashboardPage() {
   return (
-    <div className="bg-base-100">
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <header className="mb-12 text-center">
-          <h1 className="mb-3 font-bold text-3xl text-base-content tracking-tight">
+    <div className="min-h-[calc(100vh-3.75rem)] bg-base-100">
+      <div className="px-6 py-10">
+        <header className="mb-6">
+          <h1 className="mb-1 font-bold text-3xl text-base-content tracking-tight">
             <span className="text-primary">Bem-vindo!</span>
           </h1>
-          <p className="text-base-content/60">
+          <p className="text-base-content/40 text-sm">
             Seu ambiente está configurado. Siga os passos abaixo para começar.
           </p>
         </header>
