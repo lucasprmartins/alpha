@@ -4,8 +4,9 @@ import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
+import { taskRouter } from "./routers/task";
 
-export const router = {};
+export const router = { task: taskRouter };
 
 export const rpcHandler = new RPCHandler(router, {
   interceptors: [
