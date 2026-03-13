@@ -1,0 +1,10 @@
+{
+  "$schema": "https://backboard.railway.app/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "bun run build:$APP"
+  },
+  "deploy": {
+    "startCommand": "bun run start:$APP"
+  }
+}

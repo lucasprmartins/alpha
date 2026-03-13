@@ -1,0 +1,22 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "bun run build:client",
+    "watchPatterns": ["apps/client/**", "modules/auth/**", "modules/api/**"]
+  },
+  "deploy": {
+    "startCommand": "bun run start:client",
+    "overlapSeconds": 15,
+    "drainingSeconds": 10
+  },
+  "environments": {
+    "pr": {
+      "deploy": {
+        "overlapSeconds": 0,
+        "drainingSeconds": 0,
+        "sleepApplication": true
+      }
+    }
+  }
+}

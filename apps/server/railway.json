@@ -1,0 +1,33 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "bun run build:server",
+    "watchPatterns": [
+      "apps/server/**",
+      "domain/**",
+      "modules/db/**",
+      "modules/api/**",
+      "modules/auth/**"
+    ]
+  },
+  "deploy": {
+    "preDeployCommand": "bun db:migrate",
+    "startCommand": "bun run start:server",
+    "overlapSeconds": 30,
+    "drainingSeconds": 15,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 5
+  },
+  "environments": {
+    "pr": {
+      "deploy": {
+        "preDeployCommand": "bun db:migrate",
+        "overlapSeconds": 0,
+        "drainingSeconds": 0,
+        "restartPolicyType": "NEVER",
+        "sleepApplication": true
+      }
+    }
+  }
+}
