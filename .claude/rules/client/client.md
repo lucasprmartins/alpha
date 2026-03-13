@@ -1,6 +1,6 @@
 ---
 paths:
-  - "apps/web/**"
+  - "apps/client/**"
 ---
 
 ## Frontend
@@ -9,9 +9,10 @@ O frontend é construído usando React 19 + TanStack Router/Query + DaisyUI. Ele
 
 ## Instruções
 
-- Imports internos usam alias `@/` (ex: `@/features/x.queries`).
+- Imports internos usam alias `@/` (ex: `@/features/Task/queries`).
 - Componentes de página ficam em `pages/`.
-- Componentes de domínio ficam em `features/`, componentes genéricos em `components/`.
+- Componentes de domínio ficam em `features/`
+- Componentes genéricos ficam em `components/`.
 - Arquivos de componentes usam PascalCase (ex: `DashboardPage.tsx`), hooks usam camelCase (ex: `useAuth.ts`).
-- Queries e mutations ficam em `features/*.queries.ts`, interfaces e tipos em `features/*.contracts.ts`.
+- Features são organizadas em pasta PascalCase por domínio: `features/<Dominio>/contracts.ts`, `queries.ts`, `components.tsx`.
 - Funções utilitárias genéricas ficam em `utils/`.
