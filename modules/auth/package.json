@@ -1,0 +1,23 @@
+{
+  "name": "@app/auth",
+  "type": "module",
+  "private": true,
+  "packageManager": "bun@1.3.10",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@app/db": "workspace:*",
+    "@better-auth/drizzle-adapter": "^1.5.4",
+    "@better-auth/i18n": "^1.5.4",
+    "better-auth": "^1.5.4"
+  },
+  "devDependencies": {
+    "@app/config": "workspace:*",
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  }
+}
