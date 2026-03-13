@@ -28,7 +28,7 @@
     "typecheck": "turbo typecheck",
     "lint": "ultracite check",
     "lint:fix": "ultracite fix",
-    "check": "bun typecheck && bun lint"
+    "check": "bun typecheck && bun lint:fix"
   },
   "catalog": {
     "typescript": "^5.9.3",
