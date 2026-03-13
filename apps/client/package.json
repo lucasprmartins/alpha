@@ -1,0 +1,39 @@
+{
+  "name": "client",
+  "type": "module",
+  "private": true,
+  "packageManager": "bun@1.3.10",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "serve -s dist -p 3001",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@app/api": "workspace:*",
+    "@app/auth": "workspace:*",
+    "@fontsource-variable/geist": "^5.2.8",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-router": "^1.166.7",
+    "@vitejs/plugin-react": "^6.0.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "serve": "^14.2.6",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "@tanstack/react-query-devtools": "^5.91.3",
+    "@tanstack/react-router-devtools": "^1.166.7",
+    "@tanstack/router-plugin": "^1.166.7",
+    "@types/bun": "catalog:",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "daisyui": "^5.5.19",
+    "tailwindcss": "^4.2.1",
+    "typescript": "catalog:",
+    "vite": "^8.0.0"
+  }
+}
