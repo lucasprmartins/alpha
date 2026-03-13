@@ -20,7 +20,7 @@ As routes são definidas com base em arquivos.
 - O route tree é gerado automaticamente, **NUNCA** edite `routeTree.gen.ts`.
 - Use `createFileRoute` para definir rotas, layouts e sub-rotas.
 - Rotas protegidas ficam em `src/routes/_auth/` com autenticação via `beforeLoad` no layout `_auth.tsx`. Verifica sessão via `ensureQueryData(sessionOptions)` e redireciona para `/login` se não autenticado.
-- Arquivos de rota contêm **APENAS** configuração: `createFileRoute`, `beforeLoad`, `loader`, `validateSearch` e import do componente de `@/features/*.component`.
+- Arquivos de rota contêm **APENAS** configuração: `createFileRoute`, `beforeLoad`, `loader`, `validateSearch` e import do componente de `@/pages/`.
 - Passe `from` ao usar `useNavigate` para garantir tipagem correta e evitar erros de navegação.
 - Ciclo de vida da rota: `beforeLoad` → `loader` → componente renderiza:
   - Se `beforeLoad` falhar, o loader não executa e a navegação é redirecionada.
