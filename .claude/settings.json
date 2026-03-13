@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "cleanupPeriodDays": 7,
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git branch*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "mcp__plugin_essentials_context7__resolve-library-id",
+      "mcp__plugin_essentials_context7__query-docs"
+    ],
+    "ask": ["Bash(git push*)", "Bash(git checkout*)", "Bash(git switch*)"],
+    "deny": ["Read(.env*)", "Edit(.env*)", "Write(.env*)"]
+  },
+  "extraKnownMarketplaces": {
+    "beta-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "lucasprmartins/beta-plugins"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "superpowers@beta-plugins": true,
+    "essentials@beta-plugins": true
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bun .claude/statusline.mjs"
+  },
+  "terminalProgressBarEnabled": true,
+  "showTurnDuration": true,
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "Carregando a Pokédex",
+      "Evoluindo o Charmeleon",
+      "Pescando com Old Rod",
+      "Treinando na Rota 1",
+      "Capturando um Abra antes do Teleport",
+      "Ensinando HM Cut pro Bulbasaur",
+      "Desafiando o Elite Four",
+      "Procurando MissingNo",
+      "Acordando o Snorlax",
+      "Trocando Magikarp por Gyarados"
+    ]
+  },
+  "companyAnnouncements": [
+    "Seu código evoluiu! O que era Magikarp agora é Gyarados. 🐉",
+    "Merge conflict é igual batalha de ginásio: só passa quem resolve direito.",
+    "Deploy em produção sem testar é tipo soltar Mewtwo sem Master Ball.",
+    "Variável global é que nem Zubat na caverna: aparece em todo lugar e ninguém aguenta.",
+    "PR com 800 linhas? Nem o Pokédex consegue catalogar tudo isso de uma vez.",
+    "Squash commit é a evolução por pedra: transforma tudo de uma vez, sem volta.",
+    "Null pointer é o Selfdestruct do Voltorb — explode quando você menos espera.",
+    "Hotfix em sexta à noite? Escolheu Charmander pra enfrentar Brock, né?",
+    "Sua branch tá mais perdida que o Ash tentando achar a Liga Pokémon.",
+    "Code review é tipo troca de Pokémon: só evolui quando passa por outro treinador."
+  ]
+}
