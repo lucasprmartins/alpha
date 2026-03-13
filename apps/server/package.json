@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --sql-preconnect run src/index.ts | bunx pino-pretty",
+    "build": "bun build --compile --compile-exec-argv=\"--sql-preconnect\" src/index.ts --outfile server --minify",
+    "start": "./server",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@app/config": "workspace:*",
+    "@app/api": "workspace:*",
+    "@app/auth": "workspace:*",
+    "elysia": "^1.4.27",
+    "elysia-rate-limit": "^4.5.0",
+    "@elysiajs/cors": "^1.4.1"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "@types/bun": "catalog:"
+  }
+}
