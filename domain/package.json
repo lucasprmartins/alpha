@@ -1,0 +1,16 @@
+{
+  "name": "@app/domain",
+  "type": "module",
+  "private": true,
+  "packageManager": "bun@1.3.10",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "@types/bun": "catalog:"
+  }
+}
