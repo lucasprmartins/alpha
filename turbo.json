@@ -9,6 +9,7 @@
       "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
       "outputs": ["dist/**", "server", "server.exe"]
     },
+    "start": { "dependsOn": ["^build"], "cache": false, "persistent": true },
     "typecheck": {
       "dependsOn": ["^typecheck"],
       "inputs": ["**/*.{ts,tsx}", "tsconfig.json"]
