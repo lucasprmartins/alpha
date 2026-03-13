@@ -10,6 +10,7 @@
     "modules/*"
   ],
   "scripts": {
+    "cleanup": "bun run scripts/cleanup.ts",
     "setup": "bun run scripts/setup.ts",
     "env": "bun run scripts/env.ts",
     "dev": "docker compose up -d --wait postgres && turbo dev",
