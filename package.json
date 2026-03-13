@@ -4,21 +4,24 @@
   "private": true,
   "packageManager": "bun@1.3.10",
   "workspaces": [
-    "server",
-    "shared/*"
+    "config",
+    "server"
   ],
   "scripts": {
+    "dev": "turbo run dev",
     "lint": "ultracite check",
     "lint:fix": "ultracite fix"
   },
   "catalog": {
     "typescript": "^5.9.3",
-    "@types/bun": "^1.3.10"
+    "@types/bun": "^1.3.10",
+    "zod": "^4.3.6"
   },
   "dependencies": {
     "turbo": "^2.8.16"
   },
   "devDependencies": {
+    "@app/config": "workspace:*",
     "typescript": "^5.9.3",
     "@types/bun": "^1.3.10",
     "@biomejs/biome": "2.4.5",
