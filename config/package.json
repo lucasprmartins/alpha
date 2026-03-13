@@ -5,6 +5,9 @@
   "exports": {
     "./*": "./src/*.ts"
   },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "zod": "catalog:",
     "pino": "^9.14.0"
