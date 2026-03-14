@@ -1,6 +1,6 @@
 ---
 paths:
-  - "packages/db/**"
+  - "modules/db/**"
 ---
 
 ## Infraestrutura (Drizzle e integrações)
