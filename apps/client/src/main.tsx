@@ -1,29 +1,10 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { DADOS_FRESCOS, queryClient } from "@/lib/query";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
-
-const DADOS_FRESCOS = 1000 * 60; // 1 minuto
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: DADOS_FRESCOS,
-      gcTime: DADOS_FRESCOS * 5,
-      refetchOnWindowFocus: true, // Refetch quando volta à aba
-      refetchOnReconnect: true, // Refetch quando internet volta
-      refetchOnMount: true, // Refetch quando componente monta
-      retry: 1,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),
-      structuralSharing: true,
-    },
-    mutations: {
-      retry: 0,
-    },
-  },
-});
 
 const router = createRouter({
   routeTree,
