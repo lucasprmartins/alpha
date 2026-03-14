@@ -1,7 +1,8 @@
 ---
 paths:
   - "apps/web/src/components/**"
-  - "apps/web/src/features/*.component.tsx"
+  - "apps/web/src/features/**"
+  - "apps/web/src/pages/**"
 ---
 
 ## Componentes React

@@ -1,6 +1,6 @@
 ---
 paths:
-  - "apps/web/src/features/*.queries.ts"
+  - "apps/web/src/features/**"
 ---
 
 ## Queries (TanStack Query v5 + oRPC)
