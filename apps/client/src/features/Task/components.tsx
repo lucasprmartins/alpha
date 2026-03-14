@@ -12,25 +12,22 @@ import {
   WarningCircleIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useLiveQuery } from "@tanstack/react-db";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  cancelTaskTransition,
+  completeTaskTransition,
+  createTask,
   PRIORITY_CONFIG,
+  reopenTaskTransition,
   STATUS_CONFIG,
   STATUS_TABS,
   type StatusFilter,
+  startTaskTransition,
   type TaskData,
   type TaskPriority,
 } from "@/features/Task/contracts";
-import {
-  cancelTaskOptions,
-  completeTaskOptions,
-  createTaskOptions,
-  deleteTaskOptions,
-  reopenTaskOptions,
-  startTaskOptions,
-  taskListOptions,
-} from "@/features/Task/queries";
+import { taskCollection } from "@/features/Task/queries";
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -227,36 +224,46 @@ function TaskCardActions({
   return (
     <>
       {task.status === "pending" && (
-        <button
-          className="btn btn-ghost btn-xs tooltip tooltip-left text-info hover:bg-info/10"
-          data-tip="Iniciar"
-          onClick={onStart}
-          type="button"
-        >
-          <PlayIcon className="h-3.5 w-3.5" weight="fill" />
-        </button>
+        <>
+          <button
+            className="btn btn-ghost btn-xs tooltip tooltip-left text-info hover:bg-info/10"
+            data-tip="Iniciar"
+            onClick={onStart}
+            type="button"
+          >
+            <PlayIcon className="h-3.5 w-3.5" weight="fill" />
+          </button>
+          <button
+            className="btn btn-ghost btn-xs tooltip tooltip-left text-warning hover:bg-warning/10"
+            data-tip="Cancelar"
+            onClick={onCancel}
+            type="button"
+          >
+            <ProhibitIcon className="h-3.5 w-3.5" weight="bold" />
+          </button>
+        </>
       )}
-      {task.isActive && (
-        <button
-          className="btn btn-ghost btn-xs tooltip tooltip-left text-success hover:bg-success/10"
-          data-tip="Concluir"
-          onClick={onComplete}
-          type="button"
-        >
-          <CheckCircleIcon className="h-3.5 w-3.5" weight="bold" />
-        </button>
+      {task.status === "in_progress" && (
+        <>
+          <button
+            className="btn btn-ghost btn-xs tooltip tooltip-left text-success hover:bg-success/10"
+            data-tip="Concluir"
+            onClick={onComplete}
+            type="button"
+          >
+            <CheckCircleIcon className="h-3.5 w-3.5" weight="bold" />
+          </button>
+          <button
+            className="btn btn-ghost btn-xs tooltip tooltip-left text-warning hover:bg-warning/10"
+            data-tip="Cancelar"
+            onClick={onCancel}
+            type="button"
+          >
+            <ProhibitIcon className="h-3.5 w-3.5" weight="bold" />
+          </button>
+        </>
       )}
-      {task.isActive && (
-        <button
-          className="btn btn-ghost btn-xs tooltip tooltip-left text-warning hover:bg-warning/10"
-          data-tip="Cancelar"
-          onClick={onCancel}
-          type="button"
-        >
-          <ProhibitIcon className="h-3.5 w-3.5" weight="bold" />
-        </button>
-      )}
-      {!task.isActive && (
+      {(task.status === "completed" || task.status === "cancelled") && (
         <button
           className="btn btn-ghost btn-xs tooltip tooltip-left text-info hover:bg-info/10"
           data-tip="Reabrir"
@@ -375,7 +382,7 @@ function TaskCard({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-end gap-0.5 border-base-200/60 border-t px-3 py-1.5 opacity-0 group-hover:opacity-100">
+      <div className="flex items-center justify-end gap-0.5 border-base-200/60 border-t px-3 py-1.5 sm:opacity-0 sm:group-hover:opacity-100">
         <TaskCardActions
           onCancel={onCancel}
           onComplete={onComplete}
@@ -391,38 +398,64 @@ function TaskCard({
 
 // ─── Create Task Modal ──────────────────────────────────────────────
 
-function CreateTaskModal({ onClose }: { onClose: () => void }) {
-  const mutation = useMutation(
-    createTaskOptions({ onSuccess: () => onClose() })
-  );
+function CreateTaskModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) {
+      return;
+    }
+    if (open && !dialog.open) {
+      formRef.current?.reset();
+      dialog.showModal();
+    } else if (!open && dialog.open) {
+      dialog.close();
+    }
+  }, [open]);
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     const title = form.get("title") as string;
-    const description = (form.get("description") as string) || undefined;
-    const priority = (form.get("priority") as TaskPriority) || undefined;
+    const description = (form.get("description") as string) || null;
+    const priority = (form.get("priority") as TaskPriority) ?? "medium";
     const dueDateStr = form.get("dueDate") as string;
-    const dueDate = dueDateStr ? new Date(dueDateStr) : undefined;
+    const dueDate = dueDateStr ? new Date(dueDateStr) : null;
 
-    mutation.mutate({ title, description, priority, dueDate });
+    taskCollection.insert(
+      createTask({ title, description, priority, dueDate })
+    );
+    onClose();
   }
 
   return (
-    <dialog className="modal modal-open" onClose={onClose} open>
+    <dialog className="modal" onClose={onClose} ref={ref}>
       <div className="modal-box max-w-md border border-base-300/60 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <h3 className="font-bold text-lg tracking-tight">Nova tarefa</h3>
-          <button
-            className="btn btn-circle btn-ghost btn-sm text-base-content/40 hover:text-base-content"
-            onClick={onClose}
-            type="button"
-          >
-            <XIcon className="h-4 w-4" weight="bold" />
-          </button>
+          <form method="dialog">
+            <button
+              className="btn btn-circle btn-ghost btn-sm text-base-content/40 hover:text-base-content"
+              type="submit"
+            >
+              <XIcon className="h-4 w-4" weight="bold" />
+            </button>
+          </form>
         </div>
 
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-5"
+          onSubmit={handleSubmit}
+          ref={formRef}
+        >
           <fieldset className="fieldset">
             <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
               Título
@@ -477,36 +510,18 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
             </fieldset>
           </div>
 
-          {mutation.error && (
-            <div className="rounded-lg bg-error/10 px-3 py-2 text-error text-sm">
-              {mutation.error.message}
-            </div>
-          )}
-
           <div className="modal-action">
             <button className="btn btn-ghost" onClick={onClose} type="button">
               Cancelar
             </button>
-            <button
-              className="btn btn-primary"
-              disabled={mutation.isPending}
-              type="submit"
-            >
-              {mutation.isPending && (
-                <span className="loading loading-spinner loading-xs" />
-              )}
+            <button className="btn btn-primary" type="submit">
               Criar tarefa
             </button>
           </div>
         </form>
       </div>
-      <form
-        className="modal-backdrop bg-black/40 backdrop-blur-sm"
-        method="dialog"
-      >
-        <button onClick={onClose} type="button">
-          fechar
-        </button>
+      <form className="modal-backdrop" method="dialog">
+        <button type="submit">fechar</button>
       </form>
     </dialog>
   );
@@ -518,35 +533,58 @@ function CancelTaskModal({
   taskId,
   onClose,
 }: {
-  taskId: string;
+  taskId: string | null;
   onClose: () => void;
 }) {
-  const mutation = useMutation(
-    cancelTaskOptions({ onSuccess: () => onClose() })
-  );
+  const ref = useRef<HTMLDialogElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) {
+      return;
+    }
+    if (taskId && !dialog.open) {
+      formRef.current?.reset();
+      dialog.showModal();
+    } else if (!taskId && dialog.open) {
+      dialog.close();
+    }
+  }, [taskId]);
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) {
     e.preventDefault();
+    if (!taskId) {
+      return;
+    }
     const form = new FormData(e.currentTarget);
     const reason = form.get("reason") as string;
-    mutation.mutate({ id: taskId, reason });
+    taskCollection.update(taskId, (draft) =>
+      cancelTaskTransition(draft, reason)
+    );
+    onClose();
   }
 
   return (
-    <dialog className="modal modal-open" onClose={onClose} open>
+    <dialog className="modal" onClose={onClose} ref={ref}>
       <div className="modal-box max-w-md border border-base-300/60 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <h3 className="font-bold text-lg tracking-tight">Cancelar tarefa</h3>
-          <button
-            className="btn btn-circle btn-ghost btn-sm text-base-content/40 hover:text-base-content"
-            onClick={onClose}
-            type="button"
-          >
-            <XIcon className="h-4 w-4" weight="bold" />
-          </button>
+          <form method="dialog">
+            <button
+              className="btn btn-circle btn-ghost btn-sm text-base-content/40 hover:text-base-content"
+              type="submit"
+            >
+              <XIcon className="h-4 w-4" weight="bold" />
+            </button>
+          </form>
         </div>
 
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-5"
+          onSubmit={handleSubmit}
+          ref={formRef}
+        >
           <fieldset className="fieldset">
             <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
               Motivo do cancelamento
@@ -562,36 +600,86 @@ function CancelTaskModal({
             />
           </fieldset>
 
-          {mutation.error && (
-            <div className="rounded-lg bg-error/10 px-3 py-2 text-error text-sm">
-              {mutation.error.message}
-            </div>
-          )}
-
           <div className="modal-action">
             <button className="btn btn-ghost" onClick={onClose} type="button">
               Voltar
             </button>
-            <button
-              className="btn btn-error"
-              disabled={mutation.isPending}
-              type="submit"
-            >
-              {mutation.isPending && (
-                <span className="loading loading-spinner loading-xs" />
-              )}
+            <button className="btn btn-error" type="submit">
               Confirmar cancelamento
             </button>
           </div>
         </form>
       </div>
-      <form
-        className="modal-backdrop bg-black/40 backdrop-blur-sm"
-        method="dialog"
-      >
-        <button onClick={onClose} type="button">
-          fechar
-        </button>
+      <form className="modal-backdrop" method="dialog">
+        <button type="submit">fechar</button>
+      </form>
+    </dialog>
+  );
+}
+
+// ─── Delete Task Modal ──────────────────────────────────────────────
+
+function DeleteTaskModal({
+  taskId,
+  onClose,
+}: {
+  taskId: string | null;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) {
+      return;
+    }
+    if (taskId && !dialog.open) {
+      dialog.showModal();
+    } else if (!taskId && dialog.open) {
+      dialog.close();
+    }
+  }, [taskId]);
+
+  function handleConfirm() {
+    if (!taskId) {
+      return;
+    }
+    taskCollection.delete(taskId);
+    onClose();
+  }
+
+  return (
+    <dialog className="modal" onClose={onClose} ref={ref}>
+      <div className="modal-box max-w-sm border border-base-300/60 shadow-2xl">
+        <div className="flex flex-col items-center gap-4 py-2 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-error/10">
+            <TrashIcon className="h-6 w-6 text-error" weight="bold" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <h3 className="font-bold text-lg tracking-tight">Excluir tarefa</h3>
+            <p className="text-base-content/50 text-sm">
+              Essa ação não pode ser desfeita.
+            </p>
+          </div>
+        </div>
+
+        <div className="modal-action justify-center">
+          <form method="dialog">
+            <button className="btn btn-ghost" type="submit">
+              Cancelar
+            </button>
+          </form>
+          <button
+            className="btn btn-error"
+            onClick={handleConfirm}
+            type="button"
+          >
+            Excluir
+          </button>
+        </div>
+      </div>
+      <form className="modal-backdrop" method="dialog">
+        <button type="submit">fechar</button>
       </form>
     </dialog>
   );
@@ -630,16 +718,14 @@ export function TaskPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [cancelTarget, setCancelTarget] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-  const { data: tasks } = useSuspenseQuery(taskListOptions());
+  const { data: tasks } = useLiveQuery((q) => q.from({ task: taskCollection }));
 
-  const startMutation = useMutation(startTaskOptions());
-  const completeMutation = useMutation(completeTaskOptions());
-  const reopenMutation = useMutation(reopenTaskOptions());
-  const deleteMutation = useMutation(deleteTaskOptions());
-
-  const filtered = tasks.filter(
-    (t) => statusFilter === "all" || t.status === statusFilter
+  const filtered = useMemo(
+    () =>
+      tasks.filter((t) => statusFilter === "all" || t.status === statusFilter),
+    [tasks, statusFilter]
   );
 
   const summary = useMemo(() => summarizeTasks(tasks), [tasks]);
@@ -728,10 +814,16 @@ export function TaskPage() {
               <TaskCard
                 key={task.id}
                 onCancel={() => setCancelTarget(task.id)}
-                onComplete={() => completeMutation.mutate({ id: task.id })}
-                onDelete={() => deleteMutation.mutate({ id: task.id })}
-                onReopen={() => reopenMutation.mutate({ id: task.id })}
-                onStart={() => startMutation.mutate({ id: task.id })}
+                onComplete={() =>
+                  taskCollection.update(task.id, completeTaskTransition)
+                }
+                onDelete={() => setDeleteTarget(task.id)}
+                onReopen={() =>
+                  taskCollection.update(task.id, reopenTaskTransition)
+                }
+                onStart={() =>
+                  taskCollection.update(task.id, startTaskTransition)
+                }
                 task={task}
               />
             ))}
@@ -739,16 +831,20 @@ export function TaskPage() {
         )}
       </div>
 
-      {showCreateModal && (
-        <CreateTaskModal onClose={() => setShowCreateModal(false)} />
-      )}
+      <CreateTaskModal
+        onClose={() => setShowCreateModal(false)}
+        open={showCreateModal}
+      />
 
-      {cancelTarget && (
-        <CancelTaskModal
-          onClose={() => setCancelTarget(null)}
-          taskId={cancelTarget}
-        />
-      )}
+      <CancelTaskModal
+        onClose={() => setCancelTarget(null)}
+        taskId={cancelTarget}
+      />
+
+      <DeleteTaskModal
+        onClose={() => setDeleteTarget(null)}
+        taskId={deleteTarget}
+      />
     </div>
   );
 }
