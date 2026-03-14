@@ -22,6 +22,7 @@
     "start": "turbo start",
     "start:server": "turbo -F server start",
     "start:client": "turbo -F client start",
+    "db": "docker compose up -d --wait postgres",
     "db:push": "cd modules/db && bun db:push",
     "db:generate": "cd modules/db && bun db:generate",
     "db:migrate": "cd modules/db && bun db:migrate",
