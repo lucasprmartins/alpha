@@ -62,6 +62,58 @@ export const PRIORITY_CONFIG: Record<
   urgent: { label: "Urgente", stripe: "bg-error", badge: "badge-error" },
 };
 
+// ─── Factory & Transitions ──────────────────────────────────────────
+
+export function createTask(input: {
+  title: string;
+  description: string | null;
+  priority: TaskPriority;
+  dueDate: Date | null;
+}): TaskData {
+  return {
+    id: crypto.randomUUID(),
+    title: input.title,
+    description: input.description,
+    status: "pending",
+    priority: input.priority,
+    dueDate: input.dueDate,
+    completedAt: null,
+    cancelledAt: null,
+    cancellationReason: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    isOverdue: false,
+    isActive: true,
+  };
+}
+
+export function startTaskTransition(draft: TaskData) {
+  draft.status = "in_progress";
+  draft.isActive = true;
+}
+
+export function completeTaskTransition(draft: TaskData) {
+  draft.status = "completed";
+  draft.completedAt = new Date();
+  draft.isActive = false;
+}
+
+export function cancelTaskTransition(draft: TaskData, reason: string) {
+  draft.status = "cancelled";
+  draft.cancelledAt = new Date();
+  draft.cancellationReason = reason;
+  draft.isActive = false;
+}
+
+export function reopenTaskTransition(draft: TaskData) {
+  draft.status = "pending";
+  draft.completedAt = null;
+  draft.cancelledAt = null;
+  draft.cancellationReason = null;
+  draft.isOverdue = false;
+  draft.isActive = true;
+}
+
 export const STATUS_TABS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "Todas" },
   { value: "pending", label: "Pendentes" },
