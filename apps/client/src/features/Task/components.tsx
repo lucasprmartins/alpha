@@ -12,12 +12,8 @@ import {
   WarningCircleIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import {
   PRIORITY_CONFIG,
   STATUS_CONFIG,
@@ -33,7 +29,6 @@ import {
   deleteTaskOptions,
   reopenTaskOptions,
   startTaskOptions,
-  taskKeys,
   taskListOptions,
 } from "@/features/Task/queries";
 
@@ -397,15 +392,8 @@ function TaskCard({
 // ─── Create Task Modal ──────────────────────────────────────────────
 
 function CreateTaskModal({ onClose }: { onClose: () => void }) {
-  const queryClient = useQueryClient();
-
   const mutation = useMutation(
-    createTaskOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: taskKeys() });
-        onClose();
-      },
-    })
+    createTaskOptions({ onSuccess: () => onClose() })
   );
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) {
@@ -533,15 +521,8 @@ function CancelTaskModal({
   taskId: string;
   onClose: () => void;
 }) {
-  const queryClient = useQueryClient();
-
   const mutation = useMutation(
-    cancelTaskOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: taskKeys() });
-        onClose();
-      },
-    })
+    cancelTaskOptions({ onSuccess: () => onClose() })
   );
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) {
@@ -650,26 +631,12 @@ export function TaskPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [cancelTarget, setCancelTarget] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();
   const { data: tasks } = useSuspenseQuery(taskListOptions());
 
-  const invalidateTasks = useCallback(
-    () => queryClient.invalidateQueries({ queryKey: taskKeys() }),
-    [queryClient]
-  );
-
-  const startMutation = useMutation(
-    startTaskOptions({ onSuccess: invalidateTasks })
-  );
-  const completeMutation = useMutation(
-    completeTaskOptions({ onSuccess: invalidateTasks })
-  );
-  const reopenMutation = useMutation(
-    reopenTaskOptions({ onSuccess: invalidateTasks })
-  );
-  const deleteMutation = useMutation(
-    deleteTaskOptions({ onSuccess: invalidateTasks })
-  );
+  const startMutation = useMutation(startTaskOptions());
+  const completeMutation = useMutation(completeTaskOptions());
+  const reopenMutation = useMutation(reopenTaskOptions());
+  const deleteMutation = useMutation(deleteTaskOptions());
 
   const filtered = tasks.filter(
     (t) => statusFilter === "all" || t.status === statusFilter
