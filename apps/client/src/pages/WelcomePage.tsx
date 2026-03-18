@@ -91,7 +91,7 @@ export function WelcomePage() {
             <div className="flex w-full items-center gap-3">
               <div className="h-px flex-1 bg-base-300" />
               <span className="text-base-content/40 text-xs uppercase tracking-[0.3em]">
-                Vexel Template
+                Alpha Template
               </span>
               <div className="h-px flex-1 bg-base-300" />
             </div>
@@ -119,7 +119,7 @@ export function WelcomePage() {
             </Link>
             <a
               className="btn btn-soft"
-              href="https://github.com/lucasprmartins/vexel"
+              href="https://github.com/lucasprmartins/alpha"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -128,7 +128,7 @@ export function WelcomePage() {
             </a>
             <a
               className="btn btn-soft btn-secondary"
-              href="https://github.com/lucasprmartins/vexel-plugins"
+              href="https://github.com/lucasprmartins/alpha-plugins"
               rel="noopener noreferrer"
               target="_blank"
             >

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="apps/client/src/assets/logo-1.svg" alt="Vexel" width="200" />
+<img src="apps/client/src/assets/logo-1.svg" alt="Alpha" width="200" />
 <br><br>
 
 
@@ -51,13 +51,13 @@ modules/
 1. Clone o template:
 
    ```bash
-   gh repo clone lucasprmartins/vexel <nome-do-projeto>
+   gh repo clone lucasprmartins/alpha <nome-do-projeto>
    ```
 
    ou
 
    ```bash
-   git clone https://github.com/lucasprmartins/vexel.git <nome-do-projeto>
+   git clone https://github.com/lucasprmartins/alpha.git <nome-do-projeto>
    ```
 
 2. Instale as dependências e execute o inicializador:
@@ -109,9 +109,9 @@ O projeto inclui configuração pronta para deploy no [Railway](https://railway.
 
 ## Integrações
 
-Integrações opcionais estão disponíveis via [vexel-plugins](https://github.com/lucasprmartins/vexel-plugins).
+Integrações opcionais estão disponíveis via [alpha-plugins](https://github.com/lucasprmartins/alpha-plugins).
 
 ```bash
-gh repo clone lucasprmartins/vexel-plugins
-cd vexel-plugins && bun install && bun plugin
+gh repo clone lucasprmartins/alpha-plugins
+cd alpha-plugins && bun install && bun plugin
 ```

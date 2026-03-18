@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "vexel",
+      "name": "alpha",
       "dependencies": {
         "turbo": "^2.8.16",
       },
