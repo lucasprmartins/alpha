@@ -742,7 +742,7 @@ export function TaskPage() {
             <p className="text-base-content/40 text-sm">
               {tasks.length === 0
                 ? "Organize suas atividades"
-                : `${tasks.length} tarefa${tasks.length !== 1 ? "s" : ""}`}
+                : `${tasks.length} tarefa${tasks.length === 1 ? "" : "s"}`}
             </p>
           </div>
           <button
