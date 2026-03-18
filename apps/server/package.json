@@ -13,8 +13,8 @@
     "@app/config": "workspace:*",
     "@app/api": "workspace:*",
     "@app/auth": "workspace:*",
-    "elysia": "^1.4.27",
-    "elysia-rate-limit": "^4.5.0",
+    "elysia": "^1.4.28",
+    "elysia-rate-limit": "^4.5.1",
     "@elysiajs/cors": "^1.4.1"
   },
   "devDependencies": {
