@@ -103,7 +103,7 @@ O servidor roda em `http://localhost:3000` e o frontend em `http://localhost:300
 
 ## Deploy
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/QSrOcY)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/1Tsn0a)
 
 O projeto inclui configuração pronta para deploy no [Railway](https://railway.com). Clique no botão acima para criar uma instância com todos os serviços configurados.
 
