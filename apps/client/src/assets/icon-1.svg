@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Camada_2" data-name="Camada 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 238.96 244.38">
+<svg id="Camada_2" data-name="Camada 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 137.93 183.9">
   <defs>
     <style>
       .cls-1 {
-        fill: #0059c5;
+        fill: #8f1390;
       }
     </style>
   </defs>
-  <g id="Camada_2-2" data-name="Camada 2">
-    <g>
-      <polyline class="cls-1" points="117.26 89.67 71.44 244.38 0 244.38 62.58 123.67 62.58 114.8 2.96 0 71.94 0 117.26 89.67"/>
-      <polyline class="cls-1" points="121.7 89.67 167.03 0 236.01 0 176.39 114.8 176.39 123.67 238.96 244.38 167.52 244.38 121.7 89.67"/>
-    </g>
+  <g id="Logotipo-1">
+    <path class="cls-1" d="M0,45.98h45.98v91.95H0V45.98ZM45.98,0h91.95v183.9H45.98v-45.98h45.98V45.98h-45.98V0Z"/>
   </g>
 </svg>
