@@ -21,16 +21,16 @@
     "deny": ["Read(.env*)", "Edit(.env*)", "Write(.env*)"]
   },
   "extraKnownMarketplaces": {
-    "beta-plugins": {
+    "spellbook": {
       "source": {
         "source": "github",
-        "repo": "lucasprmartins/beta-plugins"
+        "repo": "lucasprmartins/spellbook"
       }
     }
   },
   "enabledPlugins": {
-    "superpowers@beta-plugins": true,
-    "essentials@beta-plugins": true
+    "forge@spellbook": true,
+    "essentials@spellbook": true
   },
   "attribution": {
     "commit": "",
