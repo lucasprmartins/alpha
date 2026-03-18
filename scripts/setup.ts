@@ -277,8 +277,7 @@ function showSummary(projectName: string, fullName: string): void {
       `${pc.cyan("GitHub:")}     ${fullName}`,
       "",
       `${pc.dim("Próximos passos:")}`,
-      "  bun install",
-      "  bun run scripts/env.ts",
+      "  bun env",
       "  bun dev",
     ].join("\n"),
     "Setup concluído"
