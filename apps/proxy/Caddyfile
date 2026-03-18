@@ -22,7 +22,7 @@
     handle {
         header {
             X-Frame-Options DENY
-            Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'"
+            Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: {$S3_ENDPOINT}; font-src 'self'; connect-src 'self'; frame-ancestors 'none'"
             Permissions-Policy "geolocation=(), camera=(), microphone=()"
         }
         reverse_proxy http://{$CLIENT_DOMAIN}:{$CLIENT_PORT}
