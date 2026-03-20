@@ -18,6 +18,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "strictNullChecks": true,
-    "types": ["bun"]
+    "types": ["bun"],
+    "paths": {
+      "@domain/*": ["./domain/*"]
+    }
   }
 }

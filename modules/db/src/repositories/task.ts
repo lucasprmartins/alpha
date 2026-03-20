@@ -1,12 +1,12 @@
 import { db } from "@app/db";
 import { task } from "@app/db/schema/task";
-import type { TaskRepository } from "@app/domain/contracts/Task";
+import type { TaskRepository } from "@domain/contracts/Task";
 import {
   Task,
   type TaskPriority,
   type TaskProps,
   type TaskStatus,
-} from "@app/domain/entities/Task";
+} from "@domain/entities/Task";
 import { eq } from "drizzle-orm";
 
 function toEntity(row: typeof task.$inferSelect): Task {

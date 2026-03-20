@@ -8,9 +8,9 @@ import {
   ListTasks,
   ReopenTask,
   StartTask,
-} from "@app/domain/application/Task";
-import type { Task } from "@app/domain/entities/Task";
-import { TaskNotFoundError } from "@app/domain/entities/Task";
+} from "@domain/application/Task";
+import type { Task } from "@domain/entities/Task";
+import { TaskNotFoundError } from "@domain/entities/Task";
 import { z } from "zod";
 import { o, requireAuth } from "../auth";
 

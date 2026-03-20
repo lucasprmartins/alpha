@@ -69,19 +69,11 @@
         "zod": "catalog:",
       },
     },
-    "domain": {
-      "name": "@app/domain",
-      "devDependencies": {
-        "@types/bun": "catalog:",
-        "typescript": "catalog:",
-      },
-    },
     "modules/api": {
       "name": "@app/api",
       "dependencies": {
         "@app/auth": "workspace:*",
         "@app/db": "workspace:*",
-        "@app/domain": "workspace:*",
         "@orpc/client": "^1.13.8",
         "@orpc/openapi": "^1.13.8",
         "@orpc/server": "^1.13.8",
@@ -118,7 +110,6 @@
     "modules/db": {
       "name": "@app/db",
       "dependencies": {
-        "@app/domain": "workspace:*",
         "dotenv": "^17.3.1",
         "drizzle-orm": "^0.45.1",
         "zod": "catalog:",
@@ -148,8 +139,6 @@
     "@app/config": ["@app/config@workspace:config"],
 
     "@app/db": ["@app/db@workspace:modules/db"],
-
-    "@app/domain": ["@app/domain@workspace:domain"],
 
     "@babel/code-frame": ["@babel/code-frame@7.29.0", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.28.5", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw=="],
 
