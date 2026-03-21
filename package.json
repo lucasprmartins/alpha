@@ -37,7 +37,7 @@
     "zod": "^4.3.6"
   },
   "dependencies": {
-    "turbo": "^2.8.17"
+    "turbo": "^2.8.20"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
