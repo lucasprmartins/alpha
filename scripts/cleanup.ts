@@ -25,7 +25,8 @@ const SERVER_TRAILING_COMMA_RE = /,(\s*\})/;
 const CLEANUP_SCRIPT_RE = /\s*"cleanup":\s*"bun run scripts\/cleanup\.ts",?\n?/;
 const PKG_TRAILING_COMMA_RE = /,(\s*\})/;
 
-const NAV_IMPORT_TASK_ICON_RE = /CheckSquareOffsetIcon,\s*|,\s*CheckSquareOffsetIcon/;
+const NAV_IMPORT_TASK_ICON_RE =
+  /CheckSquareOffsetIcon,\s*|,\s*CheckSquareOffsetIcon/;
 const NAV_TASK_MENU_ITEM_RE =
   /,?\s*\{ label: "Tarefas", icon: CheckSquareOffsetIcon, to: "\/tasks" \}/;
 
