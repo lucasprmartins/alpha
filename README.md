@@ -27,7 +27,6 @@
 
 ```
 apps/
-├── proxy/         # Proxy reverso (Caddy)
 ├── server/        # Backend (Elysia)
 └── client/        # Frontend (React 19)
 
