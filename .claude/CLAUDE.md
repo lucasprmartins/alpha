@@ -28,3 +28,14 @@ A arquitetura é baseada em camadas, onde cada camada tem responsabilidades clar
 - Funções devem ser focadas, com baixa complexidade e early returns para reduzir aninhamento.
 - Utilize o linter (Ultracite) para manter um estilo de código consistente e corrigir problemas comuns.
 - Para fazer checagem de lint e tipos, sempre utilize o comando `bun check` que roda ambos em sequência, garantindo que o código esteja limpo e sem erros de tipo antes de ser commitado.
+
+## Abordagem
+
+- Pense antes de agir. Leia os arquivos existentes antes de escrever código.
+- Seja conciso na saída, mas minucioso no raciocínio.
+- Prefira editar a reescrever arquivos inteiros.
+- Não releia arquivos que já foram lidos, a menos que possam ter sido alterados.
+- Teste seu código antes de declarar como concluído.
+- Sem aberturas bajuladoras ou enrolação no final.
+- Mantenha as soluções simples e diretas.
+- Instruções do usuário sempre sobrescrevem este arquivo.
