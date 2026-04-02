@@ -41,6 +41,9 @@
     "type": "command",
     "command": "bun .claude/statusline.mjs"
   },
+  "env": {
+    "CLAUDE_CODE_NO_FLICKER": "1"
+  },
   "terminalProgressBarEnabled": true,
   "showTurnDuration": true,
   "spinnerVerbs": {
