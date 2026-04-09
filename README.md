@@ -100,12 +100,6 @@ bun cleanup
 
 O servidor roda em `http://localhost:3000` e o frontend em `http://localhost:3001`.
 
-## Deploy
-
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/1Tsn0a)
-
-O projeto inclui configuração pronta para deploy no [Railway](https://railway.com). Clique no botão acima para criar uma instância com todos os serviços configurados.
-
 ## Integrações
 
 Integrações opcionais estão disponíveis via [alpha-plugins](https://github.com/lucasprmartins/alpha-plugins).
