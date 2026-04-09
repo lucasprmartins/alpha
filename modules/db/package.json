@@ -16,15 +16,14 @@
   },
   "dependencies": {
     "zod": "catalog:",
-    "dotenv": "^17.4.0",
+    "dotenv": "^17.4.1",
     "drizzle-orm": "^0.45.2"
   },
   "devDependencies": {
     "@app/config": "workspace:*",
-    "typescript": "catalog:",
     "@types/bun": "catalog:",
-    "postgres": "^3.4.7",
     "drizzle-kit": "^0.31.10",
-    "drizzle-seed": "^0.3.1"
+    "drizzle-seed": "^0.3.1",
+    "typescript": "catalog:"
   }
 }
