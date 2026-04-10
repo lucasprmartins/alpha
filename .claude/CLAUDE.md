@@ -32,6 +32,7 @@ A arquitetura é baseada em camadas, onde cada camada tem responsabilidades clar
 ## Abordagem
 
 - Pense antes de agir. Leia os arquivos existentes antes de escrever código.
+- Pode usar `bun arquivo.md` para ler arquivos Markdown diretamente no CLI.
 - Seja conciso na saída, mas minucioso no raciocínio.
 - Prefira editar a reescrever arquivos inteiros.
 - Não releia arquivos que já foram lidos, a menos que possam ter sido alterados.
