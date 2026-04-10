@@ -18,7 +18,7 @@
     "@tanstack/query-db-collection": "^1.0.35",
     "@tanstack/react-db": "^0.1.82",
     "@tanstack/react-query": "^5.97.0",
-    "@tanstack/react-router": "^1.168.10",
+    "@tanstack/react-router": "^1.168.11",
     "@vitejs/plugin-react": "^6.0.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
