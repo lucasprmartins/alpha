@@ -99,7 +99,7 @@ export function WelcomePage() {
 
           <div className="flex flex-col items-center gap-6 text-center">
             <img
-              alt="Beta Template"
+              alt="Alpha Template"
               className="h-12 md:h-16"
               height={420}
               src={logo1}

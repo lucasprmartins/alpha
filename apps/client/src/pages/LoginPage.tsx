@@ -26,7 +26,7 @@ export function LoginPage({ reason }: { reason?: string }) {
           to="/"
         >
           <img
-            alt="Beta"
+            alt="Alpha"
             className="h-12 w-12"
             height={420}
             src={icon1}
