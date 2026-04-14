@@ -19,7 +19,7 @@
       "mcp__plugin_essentials_context7__query-docs"
     ],
     "ask": ["Bash(git push*)", "Bash(git checkout*)", "Bash(git switch*)"],
-    "deny": ["Read(.env*)", "Edit(.env*)", "Write(.env*)"]
+    "deny": ["Read(.env*)", "Edit(.env*)", "Write(.env*)", "Agent(Explore)"]
   },
   "extraKnownMarketplaces": {
     "spellbook": {
