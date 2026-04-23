@@ -19,7 +19,7 @@ if (cwd) {
 let branch = "no-git";
 try {
   branch = execSync("git branch --show-current", { encoding: "utf-8" }).trim();
-} catch (_) {
+} catch {
   // git não disponível
 }
 
@@ -34,7 +34,7 @@ try {
   } else {
     gitStatus = "  ○";
   }
-} catch (_) {
+} catch {
   // git não disponível
 }
 
