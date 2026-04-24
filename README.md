@@ -41,7 +41,7 @@ modules/
 
 ## Requisitos
 
-- [Bun](https://bun.sh) >= 1.3.12
+- [Bun](https://bun.sh) >= 1.3.13
 - [Docker](https://www.docker.com/) *(PostgreSQL local via Docker Compose)*
 - [GitHub CLI](https://cli.github.com) (`gh`)
 
