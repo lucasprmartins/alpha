@@ -15,10 +15,10 @@
     "@app/auth": "workspace:*",
     "elysia": "^1.4.28",
     "elysia-rate-limit": "^4.6.0",
-    "@elysiajs/cors": "^1.4.1"
+    "@elysiajs/cors": "^1.4.2"
   },
   "devDependencies": {
-    "typescript": "catalog:",
-    "@types/bun": "catalog:"
+    "typescript": "^6.0.3",
+    "@types/bun": "^1.3.13"
   }
 }
