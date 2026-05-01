@@ -5,6 +5,7 @@ node_modules
 out
 dist
 *.tgz
+server.exe
 
 # code coverage
 coverage
