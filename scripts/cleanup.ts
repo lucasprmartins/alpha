@@ -30,6 +30,8 @@ const NAV_IMPORT_TASK_ICON_RE =
 const NAV_TASK_MENU_ITEM_RE =
   /,?\s*\{ label: "Tarefas", icon: CheckSquareOffsetIcon, to: "\/tasks" \}/;
 
+const DRIZZLE_SCHEMA_GLOB_RE = /schema:\s*"\.\/src\/schema\/\*\.ts"/;
+
 // ─── Arquivos de exemplo do domínio Task ────────────────────────────
 
 const TASK_FILES = [
@@ -38,15 +40,17 @@ const TASK_FILES = [
   "domain/src/contracts/Task.ts",
   "domain/src/application/Task.ts",
   "domain/src/application/Task.test.ts",
-  "modules/db/src/schema/task.ts",
   "modules/db/src/repositories/task.ts",
   "modules/api/src/routers/task.ts",
   "apps/client/src/routes/_auth/tasks.tsx",
 ];
 
-const TASK_DIRS = ["apps/client/src/features/Task"];
+const TASK_DIRS = [
+  "modules/db/src/schema/_examples",
+  "apps/client/src/features/Task",
+];
 
-// ─── Main ───────────────────────────────────────────────────────────
+// ─── Utils ──────────────────────────────────────────────────────────
 
 async function safeUnlink(path: string) {
   try {
@@ -57,6 +61,49 @@ async function safeUnlink(path: string) {
     }
   }
 }
+
+// ─── Core: remove arquivos e referências ────────────────────────────
+
+export async function cleanupTaskExamples(
+  options: { removeSelf?: boolean; removeScriptEntry?: boolean } = {}
+) {
+  const { removeSelf = true, removeScriptEntry = true } = options;
+
+  await Promise.all([
+    ...TASK_FILES.map((file) => safeUnlink(resolve(root, file))),
+    ...TASK_DIRS.map((dir) =>
+      rm(resolve(root, dir), { recursive: true, force: true })
+    ),
+  ]);
+
+  await Promise.all([
+    replaceInFile(resolve(root, "modules/api/src/server.ts"), [
+      { from: IMPORT_TASK_ROUTER_RE, to: "" },
+      { from: TASK_ROUTER_ENTRY_RE, to: "" },
+      { from: SERVER_TRAILING_COMMA_RE, to: "$1" },
+    ]),
+    replaceInFile(resolve(root, "apps/client/src/routes/-navigation.ts"), [
+      { from: NAV_IMPORT_TASK_ICON_RE, to: "" },
+      { from: NAV_TASK_MENU_ITEM_RE, to: "" },
+    ]),
+    replaceInFile(resolve(root, "modules/db/drizzle.config.ts"), [
+      { from: DRIZZLE_SCHEMA_GLOB_RE, to: 'schema: "./src/schema"' },
+    ]),
+  ]);
+
+  if (removeScriptEntry) {
+    await replaceInFile(resolve(root, "package.json"), [
+      { from: CLEANUP_SCRIPT_RE, to: "\n" },
+      { from: PKG_TRAILING_COMMA_RE, to: "$1" },
+    ]);
+  }
+
+  if (removeSelf) {
+    await safeUnlink(resolve(root, "scripts/cleanup.ts"));
+  }
+}
+
+// ─── CLI ────────────────────────────────────────────────────────────
 
 async function main() {
   intro(pc.bgCyan(pc.black(" Cleanup dos Exemplos ")));
@@ -75,44 +122,15 @@ async function main() {
   }
 
   const s = spinner();
-  s.start("Removendo arquivos de exemplo...");
-
-  await Promise.all([
-    ...TASK_FILES.map((file) => safeUnlink(resolve(root, file))),
-    ...TASK_DIRS.map((dir) =>
-      rm(resolve(root, dir), { recursive: true, force: true })
-    ),
-  ]);
-
-  s.stop("Arquivos de exemplo removidos.");
-
-  s.start("Restaurando referências...");
-
-  await Promise.all([
-    replaceInFile(resolve(root, "modules/api/src/server.ts"), [
-      { from: IMPORT_TASK_ROUTER_RE, to: "" },
-      { from: TASK_ROUTER_ENTRY_RE, to: "" },
-      { from: SERVER_TRAILING_COMMA_RE, to: "$1" },
-    ]),
-    replaceInFile(resolve(root, "package.json"), [
-      { from: CLEANUP_SCRIPT_RE, to: "\n" },
-      { from: PKG_TRAILING_COMMA_RE, to: "$1" },
-    ]),
-    replaceInFile(resolve(root, "apps/client/src/routes/-navigation.ts"), [
-      { from: NAV_IMPORT_TASK_ICON_RE, to: "" },
-      { from: NAV_TASK_MENU_ITEM_RE, to: "" },
-    ]),
-  ]);
-
-  s.stop("Referências restauradas.");
-
-  s.start("Removendo script de cleanup...");
-  await unlink(resolve(root, "scripts/cleanup.ts"));
-  s.stop("Script de cleanup removido.");
+  s.start("Removendo arquivos de exemplo e referências...");
+  await cleanupTaskExamples();
+  s.stop("Cleanup concluído.");
 
   outro(
     pc.green("Cleanup concluído! Os exemplos foram removidos com sucesso.")
   );
 }
 
-await main();
+if (import.meta.main) {
+  await main();
+}
