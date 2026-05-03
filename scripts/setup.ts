@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 
 import {
   cancel,
+  confirm,
   intro,
   isCancel,
   log,
@@ -16,6 +17,7 @@ import {
 import { $ } from "bun";
 import pc from "picocolors";
 
+import { cleanupTaskExamples } from "./cleanup";
 import {
   commandExists,
   gitCommitIfChanged,
@@ -104,6 +106,27 @@ async function renamePackage(
   pkg.name = projectName;
   await writeJsonFile(pkgPath, pkg);
   log.success(`package.json renomeado para ${pc.cyan(projectName)}`);
+}
+
+// ─── Manter ou remover exemplos do domínio Task ──────────────────────────────────
+
+async function maybeCleanupExamples(): Promise<void> {
+  const keep = await confirm({
+    message: "Manter o domínio de exemplo (Task)?",
+    initialValue: false,
+  });
+
+  exitIfCancelled(keep);
+
+  if (keep) {
+    log.info("Exemplos mantidos. Rode `bun cleanup` quando quiser removê-los.");
+    return;
+  }
+
+  const s = spinner();
+  s.start("Removendo arquivos de exemplo do domínio Task...");
+  await cleanupTaskExamples();
+  s.stop("Exemplos removidos");
 }
 
 // ─── Preparar repositório git ────────────────────────────────────────────────────
@@ -298,6 +321,7 @@ async function main(): Promise<void> {
 
   await resetReadme(projectName);
   await renamePackage(pkgPath, projectName);
+  await maybeCleanupExamples();
   await prepareGitRepo();
 
   const owner = await promptOwner();
