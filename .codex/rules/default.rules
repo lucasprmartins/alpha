@@ -1,0 +1,69 @@
+prefix_rule(
+    pattern = ["git", "status"],
+    decision = "allow",
+    justification = "Leitura de estado do Git é segura para este projeto",
+    match = ["git status", "git status --short"],
+)
+
+prefix_rule(
+    pattern = ["git", "log"],
+    decision = "allow",
+    justification = "Leitura de histórico do Git é segura para este projeto",
+    match = ["git log", "git log --oneline"],
+)
+
+prefix_rule(
+    pattern = ["git", "diff"],
+    decision = "allow",
+    justification = "Leitura de diff do Git é segura para este projeto",
+    match = ["git diff", "git diff --stat"],
+)
+
+prefix_rule(
+    pattern = ["git", "branch"],
+    decision = "allow",
+    justification = "Leitura de branches do Git é segura para este projeto",
+    match = ["git branch", "git branch --show-current"],
+)
+
+prefix_rule(
+    pattern = ["git", "add"],
+    decision = "allow",
+    justification = "Stage de alterações é permitido pelo padrão do projeto",
+    match = ["git add AGENTS.md", "git add .codex/config.toml"],
+)
+
+prefix_rule(
+    pattern = ["git", "commit"],
+    decision = "allow",
+    justification = "Commits locais são permitidos pelo padrão do projeto",
+    match = ["git commit -m setup"],
+)
+
+prefix_rule(
+    pattern = ["bun", "check"],
+    decision = "allow",
+    justification = "Comando padrão do projeto para lint e typecheck",
+    match = ["bun check"],
+)
+
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "prompt",
+    justification = "Push altera o remoto e deve pedir confirmação",
+    match = ["git push", "git push origin main"],
+)
+
+prefix_rule(
+    pattern = ["git", "checkout"],
+    decision = "prompt",
+    justification = "Checkout pode trocar ou sobrescrever contexto de trabalho",
+    match = ["git checkout main", "git checkout -b feature/test"],
+)
+
+prefix_rule(
+    pattern = ["git", "switch"],
+    decision = "prompt",
+    justification = "Switch troca o contexto de branch e deve pedir confirmação",
+    match = ["git switch main", "git switch -c feature/test"],
+)

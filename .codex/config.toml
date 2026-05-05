@@ -1,0 +1,29 @@
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+default_permissions = "workspace"
+project_doc_max_bytes = 65536
+project_doc_fallback_filenames = ["CLAUDE.md"]
+personality = "pragmatic"
+
+[tui]
+animations = true
+status_line = ["model-with-reasoning", "context-remaining", "git-branch", "current-dir"]
+terminal_title = ["spinner", "project"]
+
+[tools]
+view_image = true
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp@latest"]
+
+[permissions.workspace.filesystem]
+glob_scan_max_depth = 6
+":project_roots" = { "." = "write", ".env*" = "none", "**/.env*" = "none" }
+
+[shell_environment_policy]
+inherit = "all"
+ignore_default_excludes = false
+exclude = []
+set = {}
+include_only = []
