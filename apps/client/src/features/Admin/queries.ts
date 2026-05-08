@@ -1,6 +1,6 @@
 import { auth } from "@app/auth/client";
 import { queryOptions } from "@tanstack/react-query";
-import type { UserData } from "@/features/Users/contracts";
+import type { UserData } from "@/features/Admin/contracts";
 
 export const USERS_QUERY_KEY = ["users", "list"] as const;
 

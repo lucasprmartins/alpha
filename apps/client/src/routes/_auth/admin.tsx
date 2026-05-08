@@ -1,8 +1,8 @@
 import { WarningCircleIcon } from "@phosphor-icons/react";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { AdminPage } from "@/features/Users/components";
-import { usersListOptions } from "@/features/Users/queries";
+import { AdminPage } from "@/features/Admin/components";
+import { usersListOptions } from "@/features/Admin/queries";
 
 function AdminErrorComponent({ error, reset }: ErrorComponentProps) {
   return (

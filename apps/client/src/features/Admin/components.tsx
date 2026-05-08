@@ -34,8 +34,8 @@ import {
   isUserBanned,
   type UserData,
   type UserRole,
-} from "@/features/Users/contracts";
-import { USERS_QUERY_KEY, usersListOptions } from "@/features/Users/queries";
+} from "@/features/Admin/contracts";
+import { USERS_QUERY_KEY, usersListOptions } from "@/features/Admin/queries";
 import { generateStrongPassword } from "@/utils/password";
 import { useCopyToClipboard } from "@/utils/useCopyToClipboard";
 
