@@ -1,16 +1,16 @@
 import { WarningCircleIcon } from "@phosphor-icons/react";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { UsersPage } from "@/features/Users/components";
+import { AdminPage } from "@/features/Users/components";
 import { usersListOptions } from "@/features/Users/queries";
 
-function UsersErrorComponent({ error, reset }: ErrorComponentProps) {
+function AdminErrorComponent({ error, reset }: ErrorComponentProps) {
   return (
     <div className="flex min-h-[calc(100vh-3.75rem)] items-center justify-center">
       <div className="flex max-w-md flex-col items-center gap-4 rounded-xl bg-base-200 p-8 text-center">
         <WarningCircleIcon className="h-12 w-12 text-error" weight="bold" />
         <h1 className="font-bold text-base-content text-xl">
-          Não foi possível carregar usuários
+          Não foi possível carregar a administração
         </h1>
         <p className="text-base-content/60 text-sm">
           Verifique se o plugin <strong>admin</strong> do Better Auth está ativo
@@ -31,7 +31,7 @@ function UsersErrorComponent({ error, reset }: ErrorComponentProps) {
   );
 }
 
-export const Route = createFileRoute("/_auth/users")({
+export const Route = createFileRoute("/_auth/admin")({
   beforeLoad: ({ context }) => {
     const role = context.session?.user.role;
     if (role !== "admin") {
@@ -40,6 +40,6 @@ export const Route = createFileRoute("/_auth/users")({
   },
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(usersListOptions),
-  component: UsersPage,
-  errorComponent: UsersErrorComponent,
+  component: AdminPage,
+  errorComponent: AdminErrorComponent,
 });

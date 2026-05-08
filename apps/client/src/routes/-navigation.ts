@@ -2,7 +2,7 @@ import type { Icon } from "@phosphor-icons/react";
 import {
   CheckSquareOffsetIcon,
   HouseIcon,
-  UsersIcon,
+  ShieldCheckIcon,
 } from "@phosphor-icons/react";
 
 export interface MenuItem {
@@ -17,7 +17,7 @@ const baseItems: MenuItem[] = [
 ];
 
 const adminItems: MenuItem[] = [
-  { label: "Usuários", icon: UsersIcon, to: "/users" },
+  { label: "Administração", icon: ShieldCheckIcon, to: "/admin" },
 ];
 
 export function getMenuItems(role?: string | null): MenuItem[] {

@@ -4,15 +4,23 @@ import { RoleBadge } from "@app/auth/client/components/RoleBadge";
 import { sessionOptions } from "@app/auth/client/config";
 import { ROLE_META, ROLES } from "@app/auth/client/contracts";
 import {
+  ArrowsClockwiseIcon,
+  AtIcon,
   CaretDownIcon,
   CheckCircleIcon,
+  CheckIcon,
+  CopyIcon,
+  EnvelopeIcon,
+  LockIcon,
+  PlusIcon,
   ProhibitIcon,
+  UserIcon,
   UsersIcon,
   WarningCircleIcon,
   XIcon,
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   getUserRole,
@@ -21,6 +29,8 @@ import {
   type UserRole,
 } from "@/features/Users/contracts";
 import { USERS_QUERY_KEY, usersListOptions } from "@/features/Users/queries";
+import { generateStrongPassword } from "@/utils/password";
+import { useCopyToClipboard } from "@/utils/useCopyToClipboard";
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -574,13 +584,372 @@ function UserRow({
 
 // ─── Page ───────────────────────────────────────────────────────────
 
-export function UsersPage() {
+// ─── Password Field ─────────────────────────────────────────────────
+
+function PasswordField({
+  value,
+  onChange,
+  onRegenerate,
+  onCopy,
+  copied,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  onRegenerate: () => void;
+  onCopy: () => void;
+  copied: boolean;
+}) {
+  return (
+    <label className="input validator w-full gap-1">
+      <LockIcon className="h-4 w-4 opacity-50" />
+      <input
+        autoComplete="new-password"
+        className="grow font-mono"
+        minLength={8}
+        name="password"
+        onChange={(e) => onChange(e.target.value)}
+        required
+        type="text"
+        value={value}
+      />
+      <button
+        aria-label="Gerar nova senha"
+        className="btn btn-square btn-ghost btn-xs"
+        onClick={onRegenerate}
+        type="button"
+      >
+        <ArrowsClockwiseIcon className="h-3.5 w-3.5" weight="bold" />
+      </button>
+      <button
+        aria-label="Copiar senha"
+        className="btn btn-square btn-ghost btn-xs"
+        onClick={onCopy}
+        type="button"
+      >
+        {copied ? (
+          <CheckIcon className="h-3.5 w-3.5 text-success" weight="bold" />
+        ) : (
+          <CopyIcon className="h-3.5 w-3.5" weight="bold" />
+        )}
+      </button>
+    </label>
+  );
+}
+
+// ─── Create User Success ────────────────────────────────────────────
+
+function CreateUserSuccess({
+  email,
+  password,
+  onClose,
+}: {
+  email: string;
+  password: string;
+  onClose: () => void;
+}) {
+  const { copied, copy } = useCopyToClipboard();
+
+  return (
+    <div className="flex flex-col items-center gap-4 py-2 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-success/10">
+        <CheckCircleIcon className="h-8 w-8 text-success" weight="fill" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <h3 className="font-bold text-lg tracking-tight">Usuário criado</h3>
+        <p className="text-base-content/50 text-sm">{email}</p>
+      </div>
+      <div className="flex w-full items-center gap-2 rounded-lg bg-base-200 p-3">
+        <code className="flex-1 truncate text-left font-mono text-sm">
+          {password}
+        </code>
+        <button
+          aria-label="Copiar senha"
+          className="btn btn-square btn-ghost btn-sm"
+          onClick={() => copy(password)}
+          type="button"
+        >
+          {copied ? (
+            <CheckIcon className="h-4 w-4 text-success" weight="bold" />
+          ) : (
+            <CopyIcon className="h-4 w-4" weight="bold" />
+          )}
+        </button>
+      </div>
+      <p className="rounded-lg bg-warning/10 p-2 text-warning text-xs">
+        Copie a senha agora. Ela não será exibida novamente.
+      </p>
+      <button
+        className="btn btn-primary btn-block"
+        onClick={onClose}
+        type="button"
+      >
+        Fechar
+      </button>
+    </div>
+  );
+}
+
+// ─── Create User Modal ──────────────────────────────────────────────
+
+function CreateUserModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [createdUser, setCreatedUser] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
+  const { copied, copy, reset: resetCopied } = useCopyToClipboard();
+  const queryClient = useQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: async (input: {
+      name: string;
+      username: string;
+      email: string;
+      password: string;
+      role: UserRole;
+    }) => {
+      const res = await auth.admin.createUser({
+        name: input.name,
+        email: input.email,
+        password: input.password,
+        role: input.role,
+        data: {
+          username: input.username,
+          displayUsername: input.username,
+        },
+      });
+      if (res.error) {
+        throw new Error(res.error.message ?? "Falha ao criar usuário");
+      }
+      return res.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
+      setCreatedUser({ email: variables.email, password: variables.password });
+    },
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Erro inesperado.");
+    },
+  });
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) {
+      return;
+    }
+    if (open && !dialog.open) {
+      formRef.current?.reset();
+      setPassword(generateStrongPassword());
+      resetCopied();
+      setError(null);
+      setCreatedUser(null);
+      createMutation.reset();
+      dialog.showModal();
+    } else if (!open && dialog.open) {
+      dialog.close();
+    }
+  }, [open, createMutation.reset, resetCopied]);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    const form = new FormData(e.currentTarget);
+    const name = (form.get("name") as string).trim();
+    const username = (form.get("username") as string).trim().toLowerCase();
+    const email = (form.get("email") as string).trim().toLowerCase();
+    const roleRaw = form.get("role");
+    const role: UserRole = ROLES.includes(roleRaw as UserRole)
+      ? (roleRaw as UserRole)
+      : "user";
+    createMutation.mutate({ name, username, email, password, role });
+  }
+
+  function handleRegenerate() {
+    setPassword(generateStrongPassword());
+    resetCopied();
+  }
+
+  const isPending = createMutation.isPending;
+
+  return (
+    <dialog className="modal" onClose={onClose} ref={ref}>
+      <div className="modal-box max-w-md border border-base-300/60 shadow-2xl">
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="font-bold text-lg tracking-tight">
+            {createdUser ? "Confirmação" : "Criar usuário"}
+          </h3>
+          <form method="dialog">
+            <button
+              className="btn btn-circle btn-ghost btn-sm text-base-content/40 hover:text-base-content"
+              type="submit"
+            >
+              <XIcon className="h-4 w-4" weight="bold" />
+            </button>
+          </form>
+        </div>
+
+        {createdUser ? (
+          <CreateUserSuccess
+            email={createdUser.email}
+            onClose={onClose}
+            password={createdUser.password}
+          />
+        ) : (
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit}
+            ref={formRef}
+          >
+            <fieldset className="contents" disabled={isPending}>
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
+                  Nome
+                </legend>
+                <label className="input validator w-full">
+                  <UserIcon className="h-4 w-4 opacity-50" />
+                  <input
+                    autoFocus
+                    minLength={1}
+                    name="name"
+                    placeholder="Nome completo"
+                    required
+                    type="text"
+                  />
+                </label>
+              </fieldset>
+
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
+                  Nome de usuário
+                </legend>
+                <label className="input validator w-full">
+                  <AtIcon className="h-4 w-4 opacity-50" />
+                  <input
+                    maxLength={20}
+                    minLength={3}
+                    name="username"
+                    pattern="[a-zA-Z0-9_]+"
+                    placeholder="usuario"
+                    required
+                    type="text"
+                  />
+                </label>
+                <p className="validator-hint hidden">
+                  3 a 20 caracteres. Apenas letras, números e _.
+                </p>
+              </fieldset>
+
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
+                  E-mail
+                </legend>
+                <label className="input validator w-full">
+                  <EnvelopeIcon className="h-4 w-4 opacity-50" />
+                  <input
+                    name="email"
+                    placeholder="usuario@exemplo.com"
+                    required
+                    type="email"
+                  />
+                </label>
+              </fieldset>
+
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
+                  Papel
+                </legend>
+                <select
+                  className="select w-full"
+                  defaultValue="user"
+                  name="role"
+                >
+                  {ROLES.map((role) => (
+                    <option key={role} value={role}>
+                      {ROLE_META[role].label}
+                    </option>
+                  ))}
+                </select>
+              </fieldset>
+
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
+                  Senha
+                </legend>
+                <PasswordField
+                  copied={copied}
+                  onChange={setPassword}
+                  onCopy={() => copy(password)}
+                  onRegenerate={handleRegenerate}
+                  value={password}
+                />
+              </fieldset>
+
+              {error && (
+                <div className="flex items-center gap-2 rounded-lg bg-error/10 p-3 text-error text-sm">
+                  <WarningCircleIcon className="h-4 w-4" weight="bold" />
+                  {error}
+                </div>
+              )}
+
+              <div className="modal-action">
+                <button
+                  className="btn btn-ghost"
+                  onClick={onClose}
+                  type="button"
+                >
+                  Cancelar
+                </button>
+                <button className="btn btn-primary" type="submit">
+                  {isPending ? (
+                    <span className="loading loading-spinner loading-xs" />
+                  ) : null}
+                  Criar usuário
+                </button>
+              </div>
+            </fieldset>
+          </form>
+        )}
+      </div>
+      <form className="modal-backdrop" method="dialog">
+        <button type="submit">fechar</button>
+      </form>
+    </dialog>
+  );
+}
+
+// ─── Page ───────────────────────────────────────────────────────────
+
+export function AdminPage() {
   const { data: users, isPending } = useQuery(usersListOptions);
   const { data: session } = useQuery(sessionOptions);
   const currentUserId = session?.user.id;
 
   const [banTarget, setBanTarget] = useState<UserData | null>(null);
   const [unbanTarget, setUnbanTarget] = useState<UserData | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+
+  const sortedUsers = useMemo(() => {
+    if (!users) {
+      return;
+    }
+    return [...users].sort((a, b) => {
+      const aRole = getUserRole(a);
+      const bRole = getUserRole(b);
+      if (aRole !== bRole) {
+        return aRole === "admin" ? -1 : 1;
+      }
+      return a.name.localeCompare(b.name, "pt-BR");
+    });
+  }, [users]);
 
   const total = users?.length ?? 0;
   const activeCount = users?.filter((u) => !isUserBanned(u)).length ?? 0;
@@ -589,49 +958,68 @@ export function UsersPage() {
   return (
     <div className="min-h-[calc(100vh-3.75rem)] bg-base-100">
       <div className="mx-auto max-w-5xl px-6 py-10">
-        <div className="mb-6 flex items-start justify-between">
-          <div>
-            <h1 className="mb-1 font-bold text-3xl text-base-content tracking-tight">
-              <span className="text-primary">Usuários</span>
-            </h1>
-            <p className="text-base-content/40 text-sm">
-              {total === 0
-                ? "Gerencie quem tem acesso à plataforma"
-                : `${total} usuário${total === 1 ? "" : "s"} · ${activeCount} ativo${activeCount === 1 ? "" : "s"}${bannedCount > 0 ? ` · ${bannedCount} banido${bannedCount === 1 ? "" : "s"}` : ""}`}
-            </p>
-          </div>
+        <div className="mb-8">
+          <h1 className="mb-1 font-bold text-3xl text-base-content tracking-tight">
+            <span className="text-primary">Administração</span>
+          </h1>
+          <p className="text-base-content/40 text-sm">
+            Painel de configurações e gestão da plataforma.
+          </p>
         </div>
 
-        {users && users.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <div className="overflow-x-auto rounded-xl border border-base-300/60">
-            <table className="table">
-              <thead>
-                <tr className="text-base-content/40">
-                  <th>Nome</th>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Papel</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isPending && <LoadingRows />}
-                {users?.map((user) => (
-                  <UserRow
-                    isCurrentUser={user.id === currentUserId}
-                    key={user.id}
-                    onBan={() => setBanTarget(user)}
-                    onUnban={() => setUnbanTarget(user)}
-                    user={user}
-                  />
-                ))}
-              </tbody>
-            </table>
+        <section>
+          <div className="mb-4 flex items-end justify-between border-base-300/60 border-b pb-3">
+            <div>
+              <h2 className="font-semibold text-base-content text-lg tracking-tight">
+                Usuários
+              </h2>
+              <p className="text-base-content/40 text-xs">
+                {total === 0
+                  ? "Gerencie quem tem acesso à plataforma"
+                  : `${total} usuário${total === 1 ? "" : "s"} · ${activeCount} ativo${activeCount === 1 ? "" : "s"}${bannedCount > 0 ? ` · ${bannedCount} banido${bannedCount === 1 ? "" : "s"}` : ""}`}
+              </p>
+            </div>
+            <button
+              className="btn btn-primary btn-sm gap-1.5 shadow-primary/20 shadow-sm"
+              onClick={() => setShowCreate(true)}
+              type="button"
+            >
+              <PlusIcon className="h-4 w-4" weight="bold" />
+              Criar usuário
+            </button>
           </div>
-        )}
+
+          {users && users.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <div className="overflow-x-auto rounded-xl border border-base-300/60">
+              <table className="table">
+                <thead>
+                  <tr className="text-base-content/40">
+                    <th>Nome</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Papel</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {isPending && <LoadingRows />}
+                  {sortedUsers?.map((user) => (
+                    <UserRow
+                      isCurrentUser={user.id === currentUserId}
+                      key={user.id}
+                      onBan={() => setBanTarget(user)}
+                      onUnban={() => setUnbanTarget(user)}
+                      user={user}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
       </div>
 
       <BanUserModal onClose={() => setBanTarget(null)} user={banTarget} />
@@ -639,6 +1027,7 @@ export function UsersPage() {
         onClose={() => setUnbanTarget(null)}
         user={unbanTarget}
       />
+      <CreateUserModal onClose={() => setShowCreate(false)} open={showCreate} />
     </div>
   );
 }
