@@ -15,7 +15,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { useLiveQuery } from "@tanstack/react-db";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useImperativeHandle, useMemo, useRef, useState } from "react";
 import {
   cancelTaskTransition,
   completeTaskTransition,
@@ -416,33 +416,25 @@ function TaskCard({
 
 // ─── Create Task Modal ──────────────────────────────────────────────
 
-function CreateTaskModal({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
+interface CreateTaskModalHandle {
+  open: () => void;
+}
+
+function CreateTaskModal({ ref }: { ref: React.Ref<CreateTaskModalHandle> }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const todayISO = todayLocalISO();
 
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) {
-      return;
-    }
-    if (open && !dialog.open) {
+  useImperativeHandle(ref, () => ({
+    open() {
       formRef.current?.reset();
       setError(null);
       setIsPending(false);
-      dialog.showModal();
-    } else if (!open && dialog.open) {
-      dialog.close();
-    }
-  }, [open]);
+      dialogRef.current?.showModal();
+    },
+  }));
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -462,7 +454,7 @@ function CreateTaskModal({
         priority,
         dueDate,
       });
-      onClose();
+      dialogRef.current?.close();
       setTimeout(() => {
         taskCollection.utils.writeInsert(created);
       }, MODAL_CLOSE_ANIMATION_MS);
@@ -480,7 +472,7 @@ function CreateTaskModal({
   }
 
   return (
-    <dialog className="modal" onClose={onClose} ref={ref}>
+    <dialog className="modal" ref={dialogRef}>
       <div className="modal-box max-w-md border border-base-300/60 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <h3 className="font-bold text-lg tracking-tight">Nova tarefa</h3>
@@ -568,9 +560,11 @@ function CreateTaskModal({
             )}
 
             <div className="modal-action">
-              <button className="btn btn-ghost" onClick={onClose} type="button">
-                Cancelar
-              </button>
+              <form method="dialog">
+                <button className="btn btn-ghost" type="submit">
+                  Cancelar
+                </button>
+              </form>
               <button className="btn btn-primary" type="submit">
                 {isPending ? (
                   <span className="loading loading-spinner loading-xs" />
@@ -590,31 +584,26 @@ function CreateTaskModal({
 
 // ─── Cancel Task Modal ──────────────────────────────────────────────
 
-function CancelTaskModal({
-  taskId,
-  onClose,
-}: {
-  taskId: string | null;
-  onClose: () => void;
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
+interface CancelTaskModalHandle {
+  open: (taskId: string) => void;
+}
 
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) {
-      return;
-    }
-    if (taskId && !dialog.open) {
+function CancelTaskModal({ ref }: { ref: React.Ref<CancelTaskModalHandle> }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const taskIdRef = useRef<string | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    open(id: string) {
+      taskIdRef.current = id;
       formRef.current?.reset();
-      dialog.showModal();
-    } else if (!taskId && dialog.open) {
-      dialog.close();
-    }
-  }, [taskId]);
+      dialogRef.current?.showModal();
+    },
+  }));
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) {
     e.preventDefault();
+    const taskId = taskIdRef.current;
     if (!taskId) {
       return;
     }
@@ -623,11 +612,11 @@ function CancelTaskModal({
     taskCollection.update(taskId, (draft) =>
       cancelTaskTransition(draft, reason)
     );
-    onClose();
+    dialogRef.current?.close();
   }
 
   return (
-    <dialog className="modal" onClose={onClose} ref={ref}>
+    <dialog className="modal" ref={dialogRef}>
       <div className="modal-box max-w-md border border-base-300/60 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <h3 className="font-bold text-lg tracking-tight">Cancelar tarefa</h3>
@@ -662,9 +651,11 @@ function CancelTaskModal({
           </fieldset>
 
           <div className="modal-action">
-            <button className="btn btn-ghost" onClick={onClose} type="button">
-              Voltar
-            </button>
+            <form method="dialog">
+              <button className="btn btn-ghost" type="submit">
+                Voltar
+              </button>
+            </form>
             <button className="btn btn-error" type="submit">
               Confirmar cancelamento
             </button>
@@ -680,37 +671,32 @@ function CancelTaskModal({
 
 // ─── Delete Task Modal ──────────────────────────────────────────────
 
-function DeleteTaskModal({
-  taskId,
-  onClose,
-}: {
-  taskId: string | null;
-  onClose: () => void;
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
+interface DeleteTaskModalHandle {
+  open: (taskId: string) => void;
+}
 
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) {
-      return;
-    }
-    if (taskId && !dialog.open) {
-      dialog.showModal();
-    } else if (!taskId && dialog.open) {
-      dialog.close();
-    }
-  }, [taskId]);
+function DeleteTaskModal({ ref }: { ref: React.Ref<DeleteTaskModalHandle> }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const taskIdRef = useRef<string | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    open(id: string) {
+      taskIdRef.current = id;
+      dialogRef.current?.showModal();
+    },
+  }));
 
   function handleConfirm() {
+    const taskId = taskIdRef.current;
     if (!taskId) {
       return;
     }
     taskCollection.delete(taskId);
-    onClose();
+    dialogRef.current?.close();
   }
 
   return (
-    <dialog className="modal" onClose={onClose} ref={ref}>
+    <dialog className="modal" ref={dialogRef}>
       <div className="modal-box max-w-sm border border-base-300/60 shadow-2xl">
         <div className="flex flex-col items-center gap-4 py-2 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-error/10">
@@ -777,9 +763,10 @@ function EmptyState({ hasFilter }: { hasFilter: boolean }) {
 
 export function TaskPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [cancelTarget, setCancelTarget] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const createModalRef = useRef<CreateTaskModalHandle>(null);
+  const cancelModalRef = useRef<CancelTaskModalHandle>(null);
+  const deleteModalRef = useRef<DeleteTaskModalHandle>(null);
 
   const { data: tasks } = useLiveQuery((q) => q.from({ task: taskCollection }));
 
@@ -808,7 +795,7 @@ export function TaskPage() {
           </div>
           <button
             className="btn btn-primary btn-sm gap-1.5 shadow-primary/20 shadow-sm"
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => createModalRef.current?.open()}
             type="button"
           >
             <PlusIcon className="h-4 w-4" weight="bold" />
@@ -874,11 +861,11 @@ export function TaskPage() {
             {filtered.map((task) => (
               <TaskCard
                 key={task.id}
-                onCancel={() => setCancelTarget(task.id)}
+                onCancel={() => cancelModalRef.current?.open(task.id)}
                 onComplete={() =>
                   taskCollection.update(task.id, completeTaskTransition)
                 }
-                onDelete={() => setDeleteTarget(task.id)}
+                onDelete={() => deleteModalRef.current?.open(task.id)}
                 onReopen={() =>
                   taskCollection.update(task.id, reopenTaskTransition)
                 }
@@ -892,20 +879,11 @@ export function TaskPage() {
         )}
       </div>
 
-      <CreateTaskModal
-        onClose={() => setShowCreateModal(false)}
-        open={showCreateModal}
-      />
+      <CreateTaskModal ref={createModalRef} />
 
-      <CancelTaskModal
-        onClose={() => setCancelTarget(null)}
-        taskId={cancelTarget}
-      />
+      <CancelTaskModal ref={cancelModalRef} />
 
-      <DeleteTaskModal
-        onClose={() => setDeleteTarget(null)}
-        taskId={deleteTarget}
-      />
+      <DeleteTaskModal ref={deleteModalRef} />
     </div>
   );
 }
