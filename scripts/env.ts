@@ -54,6 +54,11 @@ async function main(): Promise<void> {
       "CORS_ORIGIN=http://localhost:3001",
       "LOG_LEVEL=debug",
       "DISABLE_PUBLIC_SIGNUP=false",
+      "S3_ENDPOINT=http://localhost:9000",
+      "S3_REGION=auto",
+      "S3_BUCKET=alpha",
+      "S3_ACCESS_KEY_ID=minioadmin",
+      "S3_SECRET_ACCESS_KEY=minioadmin",
       "",
     ].join("\n")
   );
