@@ -30,7 +30,6 @@ const NAV_IMPORT_TASK_ICON_RE =
 const NAV_TASK_MENU_ITEM_RE =
   /,?\s*\{ label: "Tarefas", icon: CheckSquareOffsetIcon, to: "\/tasks" \}/;
 
-
 // ─── Arquivos de exemplo do domínio Task ────────────────────────────
 
 const TASK_FILES = [
