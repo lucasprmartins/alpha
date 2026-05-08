@@ -76,27 +76,39 @@ O script pergunta o nome do projeto, cria um repositório GitHub privado e faz o
 bun env
 ```
 
-2. Aplique os schemas no banco de dados:
+> O `BETTER_AUTH_SECRET` é gerado automaticamente pelo `bun env`.
+
+2. Suba o PostgreSQL via Docker Compose:
+
+```bash
+bun db
+```
+
+3. Aplique os schemas no banco de dados:
 
 ```bash
 bun db:push
 ```
 
-3. Inicie o desenvolvimento:
+4. Crie os usuários iniciais (admin + comum):
+
+```bash
+bun db:users
+```
+
+> Cria `dev@dev.com` (admin) e `user@dev.com` (usuário). Senha padrão: `dev12345`. Edite `modules/auth/src/seed.ts` antes de executar para customizar credenciais. O script é auto-destrutivo — remove a si mesmo após a primeira execução.
+
+5. Inicie o desenvolvimento:
 
 ```bash
 bun dev
 ```
 
-> O `bun dev` sobe automaticamente o PostgreSQL via Docker Compose antes de iniciar o server e o client.
-
-4. Remova os arquivos de exemplo:
+6. Remova os arquivos de exemplo:
 
 ```bash
 bun cleanup
 ```
-
-> O `BETTER_AUTH_SECRET` é gerado automaticamente pelo `bun env`.
 
 O servidor roda em `http://localhost:3000` e o frontend em `http://localhost:3001`.
 
