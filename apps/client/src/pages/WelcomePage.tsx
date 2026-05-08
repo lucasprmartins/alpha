@@ -126,15 +126,6 @@ export function WelcomePage() {
               <GithubLogoIcon className="h-4 w-4" weight="bold" />
               Repo
             </a>
-            <a
-              className="btn btn-soft btn-secondary"
-              href="https://github.com/lucasprmartins/alpha-plugins"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <GithubLogoIcon className="h-4 w-4" weight="bold" />
-              Plugins
-            </a>
           </div>
         </header>
 
