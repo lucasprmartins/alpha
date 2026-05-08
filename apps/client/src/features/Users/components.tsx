@@ -20,7 +20,14 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import {
   getUserRole,
@@ -61,15 +68,14 @@ function useStickyValue<T>(value: T | null): T | null {
 
 // ─── Ban Modal ──────────────────────────────────────────────────────
 
-function BanUserModal({
-  user,
-  onClose,
-}: {
-  user: UserData | null;
-  onClose: () => void;
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
+interface BanUserModalHandle {
+  open: (user: UserData) => void;
+}
+
+function BanUserModal({ ref }: { ref: React.Ref<BanUserModalHandle> }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const displayUser = useStickyValue(user);
   const queryClient = useQueryClient();
 
@@ -86,23 +92,18 @@ function BanUserModal({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
-      onClose();
+      dialogRef.current?.close();
     },
   });
 
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) {
-      return;
-    }
-    if (user && !dialog.open) {
+  useImperativeHandle(ref, () => ({
+    open(u: UserData) {
+      setUser(u);
       formRef.current?.reset();
       banMutation.reset();
-      dialog.showModal();
-    } else if (!user && dialog.open) {
-      dialog.close();
-    }
-  }, [user, banMutation.reset]);
+      dialogRef.current?.showModal();
+    },
+  }));
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) {
     e.preventDefault();
@@ -115,7 +116,7 @@ function BanUserModal({
   }
 
   return (
-    <dialog className="modal" onClose={onClose} ref={ref}>
+    <dialog className="modal" onClose={() => setUser(null)} ref={dialogRef}>
       <div className="modal-box max-w-md border border-base-300/60 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <h3 className="font-bold text-lg tracking-tight">Inativar usuário</h3>
@@ -169,9 +170,11 @@ function BanUserModal({
           )}
 
           <div className="modal-action">
-            <button className="btn btn-ghost" onClick={onClose} type="button">
-              Voltar
-            </button>
+            <form method="dialog">
+              <button className="btn btn-ghost" type="submit">
+                Voltar
+              </button>
+            </form>
             <button
               className="btn btn-error"
               disabled={banMutation.isPending}
@@ -194,14 +197,17 @@ function BanUserModal({
 
 // ─── Unban Confirm ──────────────────────────────────────────────────
 
+interface UnbanConfirmModalHandle {
+  open: (user: UserData) => void;
+}
+
 function UnbanConfirmModal({
-  user,
-  onClose,
+  ref,
 }: {
-  user: UserData | null;
-  onClose: () => void;
+  ref: React.Ref<UnbanConfirmModalHandle>;
 }) {
-  const ref = useRef<HTMLDialogElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const displayUser = useStickyValue(user);
   const queryClient = useQueryClient();
 
@@ -215,22 +221,17 @@ function UnbanConfirmModal({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY });
-      onClose();
+      dialogRef.current?.close();
     },
   });
 
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) {
-      return;
-    }
-    if (user && !dialog.open) {
+  useImperativeHandle(ref, () => ({
+    open(u: UserData) {
+      setUser(u);
       unbanMutation.reset();
-      dialog.showModal();
-    } else if (!user && dialog.open) {
-      dialog.close();
-    }
-  }, [user, unbanMutation.reset]);
+      dialogRef.current?.showModal();
+    },
+  }));
 
   function handleConfirm() {
     if (!user) {
@@ -240,7 +241,7 @@ function UnbanConfirmModal({
   }
 
   return (
-    <dialog className="modal" onClose={onClose} ref={ref}>
+    <dialog className="modal" onClose={() => setUser(null)} ref={dialogRef}>
       <div className="modal-box max-w-sm border border-base-300/60 shadow-2xl">
         <div className="flex flex-col items-center gap-4 py-2 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success/10">
@@ -691,14 +692,12 @@ function CreateUserSuccess({
 
 // ─── Create User Modal ──────────────────────────────────────────────
 
-function CreateUserModal({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
+interface CreateUserModalHandle {
+  open: () => void;
+}
+
+function CreateUserModal({ ref }: { ref: React.Ref<CreateUserModalHandle> }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -741,23 +740,17 @@ function CreateUserModal({
     },
   });
 
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) {
-      return;
-    }
-    if (open && !dialog.open) {
+  useImperativeHandle(ref, () => ({
+    open() {
       formRef.current?.reset();
       setPassword(generateStrongPassword());
       resetCopied();
       setError(null);
       setCreatedUser(null);
       createMutation.reset();
-      dialog.showModal();
-    } else if (!open && dialog.open) {
-      dialog.close();
-    }
-  }, [open, createMutation.reset, resetCopied]);
+      dialogRef.current?.showModal();
+    },
+  }));
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -781,7 +774,7 @@ function CreateUserModal({
   const isPending = createMutation.isPending;
 
   return (
-    <dialog className="modal" onClose={onClose} ref={ref}>
+    <dialog className="modal" ref={dialogRef}>
       <div className="modal-box max-w-md border border-base-300/60 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <h3 className="font-bold text-lg tracking-tight">
@@ -800,7 +793,7 @@ function CreateUserModal({
         {createdUser ? (
           <CreateUserSuccess
             email={createdUser.email}
-            onClose={onClose}
+            onClose={() => dialogRef.current?.close()}
             password={createdUser.password}
           />
         ) : (
@@ -901,13 +894,11 @@ function CreateUserModal({
               )}
 
               <div className="modal-action">
-                <button
-                  className="btn btn-ghost"
-                  onClick={onClose}
-                  type="button"
-                >
-                  Cancelar
-                </button>
+                <form method="dialog">
+                  <button className="btn btn-ghost" type="submit">
+                    Cancelar
+                  </button>
+                </form>
                 <button className="btn btn-primary" type="submit">
                   {isPending ? (
                     <span className="loading loading-spinner loading-xs" />
@@ -933,9 +924,9 @@ export function AdminPage() {
   const { data: session } = useQuery(sessionOptions);
   const currentUserId = session?.user.id;
 
-  const [banTarget, setBanTarget] = useState<UserData | null>(null);
-  const [unbanTarget, setUnbanTarget] = useState<UserData | null>(null);
-  const [showCreate, setShowCreate] = useState(false);
+  const banModalRef = useRef<BanUserModalHandle>(null);
+  const unbanModalRef = useRef<UnbanConfirmModalHandle>(null);
+  const createModalRef = useRef<CreateUserModalHandle>(null);
 
   const sortedUsers = useMemo(() => {
     if (!users) {
@@ -981,7 +972,7 @@ export function AdminPage() {
             </div>
             <button
               className="btn btn-primary btn-sm gap-1.5 shadow-primary/20 shadow-sm"
-              onClick={() => setShowCreate(true)}
+              onClick={() => createModalRef.current?.open()}
               type="button"
             >
               <PlusIcon className="h-4 w-4" weight="bold" />
@@ -1010,8 +1001,8 @@ export function AdminPage() {
                     <UserRow
                       isCurrentUser={user.id === currentUserId}
                       key={user.id}
-                      onBan={() => setBanTarget(user)}
-                      onUnban={() => setUnbanTarget(user)}
+                      onBan={() => banModalRef.current?.open(user)}
+                      onUnban={() => unbanModalRef.current?.open(user)}
                       user={user}
                     />
                   ))}
@@ -1022,12 +1013,9 @@ export function AdminPage() {
         </section>
       </div>
 
-      <BanUserModal onClose={() => setBanTarget(null)} user={banTarget} />
-      <UnbanConfirmModal
-        onClose={() => setUnbanTarget(null)}
-        user={unbanTarget}
-      />
-      <CreateUserModal onClose={() => setShowCreate(false)} open={showCreate} />
+      <BanUserModal ref={banModalRef} />
+      <UnbanConfirmModal ref={unbanModalRef} />
+      <CreateUserModal ref={createModalRef} />
     </div>
   );
 }
