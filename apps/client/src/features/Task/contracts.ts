@@ -62,30 +62,7 @@ export const PRIORITY_CONFIG: Record<
   urgent: { label: "Urgente", stripe: "bg-error", badge: "badge-error" },
 };
 
-// ─── Factory & Transitions ──────────────────────────────────────────
-
-export function createTask(input: {
-  title: string;
-  description: string | null;
-  priority: TaskPriority;
-  dueDate: Date | null;
-}): TaskData {
-  return {
-    id: crypto.randomUUID(),
-    title: input.title,
-    description: input.description,
-    status: "pending",
-    priority: input.priority,
-    dueDate: input.dueDate,
-    completedAt: null,
-    cancelledAt: null,
-    cancellationReason: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isOverdue: false,
-    isActive: true,
-  };
-}
+// ─── Transitions ────────────────────────────────────────────────────
 
 export function startTaskTransition(draft: TaskData) {
   draft.status = "in_progress";

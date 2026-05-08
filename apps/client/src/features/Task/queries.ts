@@ -12,19 +12,6 @@ export const taskCollection = createCollection(
     queryFn: () => client.task.listTasks(),
     queryClient,
     getKey: (task) => task.id,
-    onInsert: async ({ transaction }) => {
-      await Promise.all(
-        transaction.mutations.map((mutation) => {
-          const modified = mutation.modified as TaskData;
-          return client.task.createTask({
-            title: modified.title,
-            description: modified.description ?? undefined,
-            priority: modified.priority,
-            dueDate: modified.dueDate ?? undefined,
-          });
-        })
-      );
-    },
     onUpdate: async ({ transaction }) => {
       function resolveTransition(original: TaskData, modified: TaskData) {
         if (original.status === modified.status) {

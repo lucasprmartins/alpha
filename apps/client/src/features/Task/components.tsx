@@ -1,3 +1,5 @@
+import { client } from "@app/api/client";
+import { ORPCError } from "@orpc/client";
 import {
   ArrowCounterClockwiseIcon,
   CalendarBlankIcon,
@@ -17,7 +19,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   cancelTaskTransition,
   completeTaskTransition,
-  createTask,
   PRIORITY_CONFIG,
   reopenTaskTransition,
   STATUS_CONFIG,
@@ -30,6 +31,23 @@ import {
 import { taskCollection } from "@/features/Task/queries";
 
 // ─── Helpers ────────────────────────────────────────────────────────
+
+// `<input type="date">` always sends YYYY-MM-DD; new Date(string) parses as UTC,
+// causing off-by-one in negative offsets — parse as local midnight instead.
+function parseLocalDate(value: string): Date {
+  const [y, m, d] = value.split("-").map(Number) as [number, number, number];
+  return new Date(y, m - 1, d);
+}
+
+function todayLocalISO(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+const MODAL_CLOSE_ANIMATION_MS = 250;
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString("pt-BR", {
@@ -407,6 +425,9 @@ function CreateTaskModal({
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const todayISO = todayLocalISO();
 
   useEffect(() => {
     const dialog = ref.current;
@@ -415,25 +436,47 @@ function CreateTaskModal({
     }
     if (open && !dialog.open) {
       formRef.current?.reset();
+      setError(null);
+      setIsPending(false);
       dialog.showModal();
     } else if (!open && dialog.open) {
       dialog.close();
     }
   }, [open]);
 
-  function handleSubmit(e: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    const title = form.get("title") as string;
-    const description = (form.get("description") as string) || null;
-    const priority = (form.get("priority") as TaskPriority) ?? "medium";
-    const dueDateStr = form.get("dueDate") as string;
-    const dueDate = dueDateStr ? new Date(dueDateStr) : null;
+    setError(null);
+    setIsPending(true);
+    try {
+      const form = new FormData(e.currentTarget);
+      const title = form.get("title") as string;
+      const description = (form.get("description") as string) || undefined;
+      const priority = (form.get("priority") as TaskPriority) ?? "medium";
+      const dueDateStr = form.get("dueDate") as string;
+      const dueDate = dueDateStr ? parseLocalDate(dueDateStr) : undefined;
 
-    taskCollection.insert(
-      createTask({ title, description, priority, dueDate })
-    );
-    onClose();
+      const created = await client.task.createTask({
+        title,
+        description,
+        priority,
+        dueDate,
+      });
+      onClose();
+      setTimeout(() => {
+        taskCollection.utils.writeInsert(created);
+      }, MODAL_CLOSE_ANIMATION_MS);
+    } catch (err) {
+      let message = "Erro ao criar tarefa.";
+      if (err instanceof ORPCError) {
+        const data = err.data as { message?: string } | undefined;
+        message = data?.message ?? err.message;
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
+      setError(message);
+      setIsPending(false);
+    }
   }
 
   return (
@@ -444,6 +487,7 @@ function CreateTaskModal({
           <form method="dialog">
             <button
               className="btn btn-circle btn-ghost btn-sm text-base-content/40 hover:text-base-content"
+              disabled={isPending}
               type="submit"
             >
               <XIcon className="h-4 w-4" weight="bold" />
@@ -456,68 +500,85 @@ function CreateTaskModal({
           onSubmit={handleSubmit}
           ref={formRef}
         >
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
-              Título
-            </legend>
-            <input
-              autoFocus
-              className="input w-full"
-              maxLength={200}
-              minLength={1}
-              name="title"
-              placeholder="O que precisa ser feito?"
-              required
-              type="text"
-            />
-          </fieldset>
-
-          <fieldset className="fieldset">
-            <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
-              Descrição
-            </legend>
-            <textarea
-              className="textarea w-full"
-              name="description"
-              placeholder="Detalhes adicionais (opcional)"
-              rows={3}
-            />
-          </fieldset>
-
-          <div className="grid grid-cols-2 gap-4">
+          <fieldset className="contents" disabled={isPending}>
             <fieldset className="fieldset">
               <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
-                Prioridade
+                Título
               </legend>
-              <select
-                className="select w-full"
-                defaultValue="medium"
-                name="priority"
-              >
-                {Object.entries(PRIORITY_CONFIG).map(([value, config]) => (
-                  <option key={value} value={value}>
-                    {config.label}
-                  </option>
-                ))}
-              </select>
+              <input
+                autoFocus
+                className="input w-full"
+                maxLength={200}
+                minLength={1}
+                name="title"
+                placeholder="O que precisa ser feito?"
+                required
+                type="text"
+              />
             </fieldset>
 
             <fieldset className="fieldset">
               <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
-                Data limite
+                Descrição
               </legend>
-              <input className="input w-full" name="dueDate" type="date" />
+              <textarea
+                className="textarea w-full"
+                name="description"
+                placeholder="Detalhes adicionais (opcional)"
+                rows={3}
+              />
             </fieldset>
-          </div>
 
-          <div className="modal-action">
-            <button className="btn btn-ghost" onClick={onClose} type="button">
-              Cancelar
-            </button>
-            <button className="btn btn-primary" type="submit">
-              Criar tarefa
-            </button>
-          </div>
+            <div className="grid grid-cols-2 gap-4">
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
+                  Prioridade
+                </legend>
+                <select
+                  className="select w-full"
+                  defaultValue="medium"
+                  name="priority"
+                >
+                  {Object.entries(PRIORITY_CONFIG).map(([value, config]) => (
+                    <option key={value} value={value}>
+                      {config.label}
+                    </option>
+                  ))}
+                </select>
+              </fieldset>
+
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend font-semibold text-base-content/40 text-xs uppercase tracking-wider">
+                  Data limite
+                </legend>
+                <input
+                  className="input w-full"
+                  min={todayISO}
+                  name="dueDate"
+                  type="date"
+                />
+              </fieldset>
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 rounded-lg bg-error/10 p-3 text-error text-sm">
+                <WarningCircleIcon className="h-4 w-4" weight="bold" />
+                {error}
+              </div>
+            )}
+
+            <div className="modal-action">
+              <button className="btn btn-ghost" onClick={onClose} type="button">
+                Cancelar
+              </button>
+              <button className="btn btn-primary" type="submit">
+                {isPending ? (
+                  <span className="loading loading-spinner loading-xs" />
+                ) : null}
+                Criar tarefa
+              </button>
+            </div>
+          </fieldset>
         </form>
       </div>
       <form className="modal-backdrop" method="dialog">
