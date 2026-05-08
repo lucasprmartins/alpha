@@ -10,6 +10,7 @@ const envSchema = z.object({
     .enum(["debug", "info", "warn", "error", "fatal"])
     .optional()
     .default("info"),
+  DISABLE_PUBLIC_SIGNUP: z.coerce.boolean().optional().default(true),
 });
 
 const result = envSchema.safeParse(process.env);

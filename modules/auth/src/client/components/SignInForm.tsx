@@ -91,15 +91,18 @@ export const SignInForm = ({ onSwitchForm }: SignInFormProps) => {
           )}
         </button>
 
-        <div className="divider">Não possui conta?</div>
-
-        <button
-          className="btn btn-ghost btn-block"
-          onClick={onSwitchForm}
-          type="button"
-        >
-          Cadastre-se
-        </button>
+        {onSwitchForm && (
+          <>
+            <div className="divider">Não possui conta?</div>
+            <button
+              className="btn btn-ghost btn-block"
+              onClick={onSwitchForm}
+              type="button"
+            >
+              Cadastre-se
+            </button>
+          </>
+        )}
       </fieldset>
     </form>
   );

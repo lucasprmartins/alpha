@@ -22,6 +22,7 @@ export const auth = betterAuth({
   trustedOrigins: corsOrigins,
   emailAndPassword: {
     enabled: true,
+    disableSignUp: env.DISABLE_PUBLIC_SIGNUP,
   },
   session: {
     expiresIn: 60 * 60 * 24 * 7,

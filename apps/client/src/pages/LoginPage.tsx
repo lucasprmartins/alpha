@@ -6,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 const SESSION_EXPIRED_REASON = "session-expired";
+const SIGNUP_BLOCKED = import.meta.env.VITE_DISABLE_PUBLIC_SIGNUP !== "false";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -33,8 +34,10 @@ export function LoginPage({ reason }: { reason?: string }) {
             width={390}
           />
         </Link>
-        {mode === "sign-in" ? (
-          <SignInForm onSwitchForm={() => setMode("sign-up")} />
+        {mode === "sign-in" || SIGNUP_BLOCKED ? (
+          <SignInForm
+            onSwitchForm={SIGNUP_BLOCKED ? undefined : () => setMode("sign-up")}
+          />
         ) : (
           <SignUpForm onSwitchForm={() => setMode("sign-in")} />
         )}

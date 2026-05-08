@@ -17,7 +17,7 @@ export const ptBR = {
   FAILED_TO_UPDATE_USER: "Não foi possível atualizar o usuário.",
   ACCOUNT_NOT_FOUND: "Conta não encontrada.",
   VERIFICATION_FAILED: "Falha na verificação.",
-  SIGNUP_DISABLED: "Cadastro desativado.",
+  EMAIL_PASSWORD_SIGN_UP_DISABLED: "Cadastro desativado.",
 
   // Username plugin
   USERNAME_IS_ALREADY_TAKEN: "Este nome de usuário já está em uso.",
