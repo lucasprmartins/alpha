@@ -1,3 +1,5 @@
+import type { Icon } from "@phosphor-icons/react";
+import { ShieldCheckIcon, UserCircleIcon } from "@phosphor-icons/react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 export interface AuthResult<T = unknown> {
@@ -72,3 +74,30 @@ export type SignOutButtonProps = Omit<
   ComponentPropsWithoutRef<"button">,
   "onClick"
 >;
+
+export type UserRole = "admin" | "user";
+
+export const ROLES: UserRole[] = ["user", "admin"];
+
+interface RoleMeta {
+  label: string;
+  icon: Icon;
+  badgeClass: string;
+}
+
+export const ROLE_META: Record<UserRole, RoleMeta> = {
+  admin: {
+    label: "Admin",
+    icon: ShieldCheckIcon,
+    badgeClass: "badge badge-soft badge-primary gap-1 font-medium",
+  },
+  user: {
+    label: "Usuário",
+    icon: UserCircleIcon,
+    badgeClass: "badge badge-soft gap-1 font-medium",
+  },
+};
+
+export function toUserRole(role?: string | null): UserRole {
+  return role === "admin" ? "admin" : "user";
+}
