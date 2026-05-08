@@ -1,10 +1,15 @@
 import { UserMenu } from "@app/auth/client/components/UserMenu";
+import { sessionOptions } from "@app/auth/client/config";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { HeaderLogo } from "@/components/ui/header-logo";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { menuItems, NAV_ACTIVE_CLASS } from "@/routes/-navigation";
+import { getMenuItems, NAV_ACTIVE_CLASS } from "@/routes/-navigation";
 
 export function Header({ children }: { children: React.ReactNode }) {
+  const { data: session } = useQuery(sessionOptions);
+  const menuItems = getMenuItems(session?.user.role);
+
   return (
     <div className="flex min-h-screen flex-col">
       <nav className="sticky top-0 z-30 h-15 border-base-300 border-b bg-base-100">
