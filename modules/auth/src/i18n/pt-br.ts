@@ -20,6 +20,7 @@ export const ptBR = {
   EMAIL_PASSWORD_SIGN_UP_DISABLED: "Cadastro desativado.",
 
   // Username plugin
+  INVALID_USERNAME_OR_PASSWORD: "Usuário ou senha inválidos.",
   USERNAME_IS_ALREADY_TAKEN: "Este nome de usuário já está em uso.",
   USERNAME_TOO_SHORT: "O nome de usuário é muito curto.",
   USERNAME_TOO_LONG: "O nome de usuário é muito longo.",
