@@ -53,15 +53,19 @@ async function main(): Promise<void> {
       "BETTER_AUTH_URL=http://localhost:3000",
       "CORS_ORIGIN=http://localhost:3001",
       "LOG_LEVEL=debug",
+      "DISABLE_PUBLIC_SIGNUP=false",
       "",
     ].join("\n")
   );
 
   await createEnvFile(
     "apps/client/.env",
-    ["VITE_SERVER_URL=http://localhost:3000", "VITE_DEVTOOLS=true", ""].join(
-      "\n"
-    )
+    [
+      "VITE_SERVER_URL=http://localhost:3000",
+      "VITE_DEVTOOLS=true",
+      "VITE_DISABLE_PUBLIC_SIGNUP=false",
+      "",
+    ].join("\n")
   );
 
   if (serverCreated) {
