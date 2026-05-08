@@ -26,7 +26,7 @@ export const ptBR = {
   INVALID_USERNAME: "Nome de usuário inválido.",
 
   // Admin plugin
-  USER_IS_BANNED: "Seu acesso foi bloqueado.",
+  BANNED_USER: "Você não tem mais acesso. Entre em contato com o suporte.",
   YOU_ARE_NOT_ALLOWED_TO_PERFORM_THIS_ACTION:
     "Você não tem permissão para esta ação.",
   CANNOT_BAN_ADMIN: "Não é possível bloquear um administrador.",
