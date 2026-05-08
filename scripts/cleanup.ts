@@ -30,7 +30,6 @@ const NAV_IMPORT_TASK_ICON_RE =
 const NAV_TASK_MENU_ITEM_RE =
   /,?\s*\{ label: "Tarefas", icon: CheckSquareOffsetIcon, to: "\/tasks" \}/;
 
-const DRIZZLE_SCHEMA_GLOB_RE = /schema:\s*"\.\/src\/schema\/\*\.ts"/;
 
 // ─── Arquivos de exemplo do domínio Task ────────────────────────────
 
@@ -40,15 +39,13 @@ const TASK_FILES = [
   "domain/src/contracts/Task.ts",
   "domain/src/application/Task.ts",
   "domain/src/application/Task.test.ts",
+  "modules/db/src/schema/task.ts",
   "modules/db/src/repositories/task.ts",
   "modules/api/src/routers/task.ts",
   "apps/client/src/routes/_auth/tasks.tsx",
 ];
 
-const TASK_DIRS = [
-  "modules/db/src/schema/_examples",
-  "apps/client/src/features/Task",
-];
+const TASK_DIRS = ["apps/client/src/features/Task"];
 
 // ─── Utils ──────────────────────────────────────────────────────────
 
@@ -85,9 +82,6 @@ export async function cleanupTaskExamples(
     replaceInFile(resolve(root, "apps/client/src/routes/-navigation.ts"), [
       { from: NAV_IMPORT_TASK_ICON_RE, to: "" },
       { from: NAV_TASK_MENU_ITEM_RE, to: "" },
-    ]),
-    replaceInFile(resolve(root, "modules/db/drizzle.config.ts"), [
-      { from: DRIZZLE_SCHEMA_GLOB_RE, to: 'schema: "./src/schema"' },
     ]),
   ]);
 

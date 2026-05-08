@@ -1,5 +1,5 @@
 import { db } from "@app/db";
-import { task } from "@app/db/schema/_examples/task";
+import { task } from "@app/db/schema/task";
 import type { TaskRepository } from "@domain/contracts/Task";
 import {
   Task,
