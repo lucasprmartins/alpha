@@ -732,7 +732,7 @@ export function TaskPage() {
 
   return (
     <div className="min-h-[calc(100vh-3.75rem)] bg-base-100">
-      <div className="px-6 py-10">
+      <div className="mx-auto max-w-5xl px-6 py-10">
         {/* Header */}
         <div className="mb-6 flex items-start justify-between">
           <div>
