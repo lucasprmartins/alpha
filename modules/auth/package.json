@@ -11,7 +11,8 @@
     "./*": "./src/*.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:users": "bun --env-file=../../apps/server/.env src/seed.ts"
   },
   "dependencies": {
     "@app/db": "workspace:*",

@@ -25,6 +25,7 @@
     "db:push": "cd modules/db && bun db:push",
     "db:generate": "cd modules/db && bun db:generate",
     "db:migrate": "cd modules/db && bun db:migrate",
+    "db:users": "cd modules/auth && bun db:users",
     "db:studio": "cd modules/db && bun db:studio",
     "typecheck": "turbo typecheck",
     "lint": "ultracite check",
