@@ -1,11 +1,12 @@
 import { auth } from "@app/auth/client";
+import { Avatar } from "@app/auth/client/components/Avatar";
+import { RoleBadge } from "@app/auth/client/components/RoleBadge";
 import { sessionOptions } from "@app/auth/client/config";
+import { ROLE_META, ROLES } from "@app/auth/client/contracts";
 import {
   CaretDownIcon,
   CheckCircleIcon,
   ProhibitIcon,
-  ShieldCheckIcon,
-  UserCircleIcon,
   UsersIcon,
   WarningCircleIcon,
   XIcon,
@@ -14,7 +15,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
-  getInitials,
   getUserRole,
   isUserBanned,
   type UserData,
@@ -23,25 +23,6 @@ import {
 import { USERS_QUERY_KEY, usersListOptions } from "@/features/Users/queries";
 
 // ─── Helpers ────────────────────────────────────────────────────────
-
-function UserAvatar({ user }: { user: UserData }) {
-  if (user.image) {
-    return (
-      <img
-        alt={user.name}
-        className="h-9 w-9 rounded-full object-cover"
-        height={36}
-        src={user.image}
-        width={36}
-      />
-    );
-  }
-  return (
-    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xs">
-      {getInitials(user.name)}
-    </div>
-  );
-}
 
 function StatusBadge({ banned }: { banned: boolean }) {
   if (banned) {
@@ -56,37 +37,6 @@ function StatusBadge({ banned }: { banned: boolean }) {
     <span className="badge badge-soft badge-success gap-1 font-medium">
       <CheckCircleIcon className="h-3 w-3" weight="bold" />
       Ativo
-    </span>
-  );
-}
-
-interface RoleMeta {
-  label: string;
-  icon: typeof ShieldCheckIcon;
-  badgeClass: string;
-}
-
-const ROLE_META: Record<UserRole, RoleMeta> = {
-  admin: {
-    label: "Admin",
-    icon: ShieldCheckIcon,
-    badgeClass: "badge badge-soft badge-primary gap-1 font-medium",
-  },
-  user: {
-    label: "Usuário",
-    icon: UserCircleIcon,
-    badgeClass: "badge badge-soft gap-1 font-medium",
-  },
-};
-
-const ROLES: UserRole[] = ["user", "admin"];
-
-function RoleBadge({ role }: { role: UserRole }) {
-  const meta = ROLE_META[role];
-  return (
-    <span className={meta.badgeClass}>
-      <meta.icon className="h-3 w-3" weight="bold" />
-      {meta.label}
     </span>
   );
 }
@@ -171,7 +121,7 @@ function BanUserModal({
 
         {displayUser && (
           <div className="mb-5 flex items-center gap-3 rounded-lg bg-base-200/50 p-3">
-            <UserAvatar user={displayUser} />
+            <Avatar image={displayUser.image} name={displayUser.name} />
             <div className="flex flex-col">
               <span className="font-semibold text-sm">{displayUser.name}</span>
               <span className="text-base-content/50 text-xs">
@@ -582,7 +532,7 @@ function UserRow({
     <tr className="hover:bg-base-200/40">
       <td>
         <div className="flex items-center gap-3">
-          <UserAvatar user={user} />
+          <Avatar image={user.image} name={user.name} />
           <div className="flex flex-col">
             <span className="font-semibold text-sm">
               {user.name}
