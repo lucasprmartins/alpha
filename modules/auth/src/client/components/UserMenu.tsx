@@ -1,7 +1,9 @@
-import { CaretDownIcon, SignOutIcon } from "@phosphor-icons/react";
+import { SignOutIcon, UserCircleIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { sessionOptions } from "../config";
 import { useSignOut } from "../hooks/useSignOut";
+import { Avatar } from "./Avatar";
 
 export const UserMenu = () => {
   const { data: session } = useQuery(sessionOptions);
@@ -12,13 +14,6 @@ export const UserMenu = () => {
     return null;
   }
 
-  const initials = user.name
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
   const handleSignOut = () => {
     (document.activeElement as HTMLElement)?.blur();
     signOut();
@@ -27,46 +22,40 @@ export const UserMenu = () => {
   return (
     <div className="dropdown dropdown-end">
       <button
-        className="btn btn-ghost h-10 min-h-10 gap-2 px-2"
-        tabIndex={0}
+        aria-label="Menu do usuário"
+        className="cursor-pointer transition-opacity hover:opacity-80"
         type="button"
       >
-        <div className="avatar avatar-placeholder">
-          <div className="w-8 rounded-full bg-primary/10 text-primary">
-            <span className="font-semibold text-xs">{initials}</span>
-          </div>
-        </div>
-        <span className="hidden font-medium text-sm sm:block">
-          {user.username ?? user.name}
-        </span>
-        <CaretDownIcon className="h-3 w-3 opacity-40" weight="bold" />
+        <Avatar image={user.image} name={user.name} ring size="sm" />
       </button>
 
-      <div className="dropdown-content z-50 mt-1 w-56 overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-lg">
-        <div className="border-base-300 border-b px-4 py-3">
-          <p className="font-semibold text-base-content text-sm">{user.name}</p>
-          {user.username && (
-            <p className="text-base-content/50 text-xs">@{user.username}</p>
-          )}
-          <p className="mt-0.5 text-base-content/40 text-xs">{user.email}</p>
-        </div>
-
-        <div className="p-2">
+      <ul className="dropdown-content menu z-50 mt-2 w-44 rounded-xl border border-base-300/60 bg-base-100 p-1 shadow-lg">
+        <li>
+          <Link
+            className="flex items-center gap-2"
+            onClick={() => (document.activeElement as HTMLElement)?.blur()}
+            to="/profile"
+          >
+            <UserCircleIcon className="h-4 w-4" weight="bold" />
+            <span className="text-sm">Perfil</span>
+          </Link>
+        </li>
+        <li className="mt-1 border-base-300/60 border-t pt-1">
           <button
-            className="btn btn-soft btn-error btn-sm btn-block justify-start"
+            className="flex items-center gap-2 bg-error/10 text-error hover:bg-error/20"
             disabled={isPending}
             onClick={handleSignOut}
             type="button"
           >
             {isPending ? (
-              <span className="loading loading-ring loading-xs" />
+              <span className="loading loading-spinner loading-xs" />
             ) : (
               <SignOutIcon className="h-4 w-4" weight="bold" />
             )}
-            Sair
+            <span className="text-sm">Sair</span>
           </button>
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
   );
 };
