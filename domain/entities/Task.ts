@@ -105,7 +105,7 @@ export class Task {
     if (this._status === "completed" || this._status === "cancelled") {
       return false;
     }
-    return this._dueDate < new Date();
+    return this._dueDate < Task.startOfToday();
   }
 
   get isActive(): boolean {
@@ -118,8 +118,9 @@ export class Task {
       return err(titleError);
     }
 
-    if (input.dueDate && input.dueDate < new Date()) {
-      return err(new TaskValidationError("A data limite deve ser no futuro"));
+    const dueDateError = Task.validateDueDate(input.dueDate);
+    if (dueDateError) {
+      return err(dueDateError);
     }
 
     const now = new Date();
@@ -219,8 +220,9 @@ export class Task {
     if (activeError) {
       return err(activeError);
     }
-    if (dueDate && dueDate < new Date()) {
-      return err(new TaskValidationError("A data limite deve ser no futuro"));
+    const dueDateError = Task.validateDueDate(dueDate);
+    if (dueDateError) {
+      return err(dueDateError);
     }
     this._dueDate = dueDate;
     this.touch();
@@ -250,6 +252,26 @@ export class Task {
 
   private touch(): void {
     this._updatedAt = new Date();
+  }
+
+  private static startOfToday(): Date {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  private static validateDueDate(
+    dueDate: Date | null | undefined
+  ): TaskValidationError | null {
+    if (!dueDate) {
+      return null;
+    }
+    if (dueDate < Task.startOfToday()) {
+      return new TaskValidationError(
+        "A data limite não pode ser anterior a hoje."
+      );
+    }
+    return null;
   }
 
   private static validateTitle(title: string): TaskValidationError | null {
