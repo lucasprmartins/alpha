@@ -98,7 +98,15 @@ describe("Task.create", () => {
       return;
     }
     expect(result.error).toBeInstanceOf(TaskValidationError);
-    expect(result.error.message).toContain("futuro");
+    expect(result.error.message).toContain("anterior a hoje");
+  });
+
+  it("aceita data limite hoje", () => {
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+    const result = Task.create({ title: "Tarefa", dueDate: today });
+
+    expect(result.ok).toBe(true);
   });
 });
 
