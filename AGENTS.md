@@ -105,6 +105,7 @@ Em ordem sequencial, os componentes React devem seguir esta estrutura lógica pa
 - Estado local com `useState` para campos controlados.
 - Validação no submit, não em cada onChange.
 - Botão de submit desabilitado quando `enviando` ou campos vazios.
+- Modais: `<dialog className="modal">` controlado por ref imperativo (`useImperativeHandle` expondo `open()`). Nunca sincronizar prop com `showModal`/`close` via `useEffect`.
 
 ## Queries e Mutations (`apps/client/src/features/**`)
 
