@@ -114,7 +114,6 @@ export async function stepPush(_state: SetupState): Promise<void> {
 }
 
 export async function stepSelfClean(_state: SetupState): Promise<void> {
-  const setupPath = resolve(ROOT, "scripts/setup.ts");
   const pkgPath = resolve(ROOT, "package.json");
 
   const pkg = await readJsonFile<Record<string, unknown>>(pkgPath);
@@ -126,10 +125,12 @@ export async function stepSelfClean(_state: SetupState): Promise<void> {
     await writeJsonFile(pkgPath, pkg);
   }
 
-  await rm(setupPath, { force: true });
-
-  const committed = await gitCommitIfChanged("chore: remove script de setup");
-  if (committed) {
-    await $`git push`.quiet();
-  }
+  await Promise.all(
+    [
+      "scripts/setup.ts",
+      "scripts/lib/preflight.ts",
+      "scripts/lib/state.ts",
+      "scripts/lib/steps.ts",
+    ].map((p) => rm(resolve(ROOT, p), { force: true }))
+  );
 }

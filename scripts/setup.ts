@@ -59,9 +59,9 @@ const ALL_STEPS: Array<{
   { name: "db_seed", fn: stepDbSeed },
   { name: "gh_repo", fn: stepGhRepo },
   { name: "remote", fn: stepRemote },
+  { name: "self_clean", fn: stepSelfClean },
   { name: "commit", fn: stepCommit },
   { name: "push", fn: stepPush },
-  { name: "self_clean", fn: stepSelfClean },
 ];
 
 function exitIfCancelled<T>(value: T | symbol): asserts value is T {
