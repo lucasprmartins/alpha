@@ -12,6 +12,7 @@
     "cleanup": "bun run scripts/cleanup.ts",
     "setup": "bun run scripts/setup.ts",
     "env": "bun run scripts/env.ts",
+    "predev": "bun db",
     "dev": "turbo dev",
     "dev:server": "turbo -F server dev",
     "dev:client": "turbo -F client dev",

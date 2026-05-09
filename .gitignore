@@ -43,3 +43,6 @@ nul
 # Claude Code
 settings.local.json
 .mcp.json
+
+# Setup state (gerado por bun setup, removido ao final)
+.setup-state.json
