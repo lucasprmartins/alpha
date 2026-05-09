@@ -12,7 +12,7 @@ export type StepName =
   | "env_files"
   | "auth_secret"
   | "docker_up"
-  | "db_push"
+  | "db_migrate"
   | "db_seed"
   | "gh_repo"
   | "remote"

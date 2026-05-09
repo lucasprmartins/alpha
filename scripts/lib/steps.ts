@@ -68,8 +68,8 @@ export async function stepDockerUp(_state: SetupState): Promise<void> {
   await $`docker compose up -d --wait postgres`.quiet();
 }
 
-export async function stepDbPush(_state: SetupState): Promise<void> {
-  await $`bun run db:push`.quiet();
+export async function stepDbMigrate(_state: SetupState): Promise<void> {
+  await $`bun run db:migrate`.quiet();
 }
 
 export async function stepDbSeed(state: SetupState): Promise<void> {
