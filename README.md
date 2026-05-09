@@ -66,19 +66,6 @@ modules/
    bun install && bun setup
    ```
 
-O `bun setup` é um processo único e retomável. Ele:
-
-- Verifica pré-requisitos (Bun, Docker, GitHub CLI autenticado, `node_modules`).
-- Pergunta nome do projeto, owner do GitHub, visibilidade, se manter exemplos, se seedar usuários.
-- Renomeia `package.json`, atualiza `README.md`, opcionalmente remove o domínio Task de exemplo.
-- Reinicia o repositório git, gera `.env` (server + client) com `BETTER_AUTH_SECRET` aleatório.
-- Sobe o PostgreSQL via Docker Compose, aplica os schemas (`db:push`).
-- Opcionalmente cria os usuários iniciais (`dev@dev.com` admin / `user@dev.com`, senha `dev12345` — edite `modules/auth/src/seed.ts` antes de rodar para customizar).
-- Cria o repositório no GitHub, configura o `origin` e faz o push inicial.
-- Remove a si mesmo do template e apaga `.setup-state.json`.
-
-> Em qualquer falha, o estado é salvo em `.setup-state.json`. Reexecute `bun setup` para retomar do passo que falhou ou `bun setup --reset` para recomeçar do zero.
-
 ## Após o setup
 
 ```bash
