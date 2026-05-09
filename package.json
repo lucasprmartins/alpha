@@ -28,6 +28,7 @@
     "db:migrate": "cd modules/db && bun db:migrate",
     "db:users": "cd modules/auth && bun db:users",
     "db:studio": "cd modules/db && bun db:studio",
+    "s3": "docker compose up -d --wait minio minio-init",
     "typecheck": "turbo typecheck",
     "lint": "ultracite check",
     "lint:fix": "ultracite fix",
