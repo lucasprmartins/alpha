@@ -46,6 +46,57 @@
   --noise: 0;
 }
 
+@layer base {
+  * {
+    scrollbar-color: transparent transparent;
+    scrollbar-width: thin;
+  }
+
+  *:hover {
+    scrollbar-color: color-mix(
+        in oklch,
+        var(--color-base-content) 30%,
+        transparent
+      )
+      transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 9999px;
+    transition: background-color 0.15s ease-out;
+  }
+
+  :hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(
+      in oklch,
+      var(--color-base-content) 30%,
+      transparent
+    );
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(
+      in oklch,
+      var(--color-base-content) 50%,
+      transparent
+    );
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
 @plugin "daisyui/theme" {
   name: "dark";
   default: false;
