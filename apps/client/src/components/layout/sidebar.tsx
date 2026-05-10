@@ -7,6 +7,13 @@ import { menuItems, NAV_ACTIVE_CLASS } from "@/routes/-navigation";
 
 const DRAWER_ID = "app-sidebar";
 
+const closeDrawer = () => {
+  const el = document.getElementById(DRAWER_ID) as HTMLInputElement | null;
+  if (el) {
+    el.checked = false;
+  }
+};
+
 export function Sidebar({ children }: { children: React.ReactNode }) {
   return (
     <div className="drawer lg:drawer-open">
@@ -54,6 +61,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
                   activeProps={{ className: NAV_ACTIVE_CLASS }}
                   className="is-drawer-close:tooltip is-drawer-close:tooltip-right text-secondary hover:bg-base-content/5! hover:text-base-content"
                   data-tip={item.label}
+                  onClick={closeDrawer}
                   to={item.to}
                 >
                   {({ isActive }) => (
