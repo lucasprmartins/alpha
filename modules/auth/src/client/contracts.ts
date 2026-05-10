@@ -101,3 +101,7 @@ export const ROLE_META: Record<UserRole, RoleMeta> = {
 export function toUserRole(role?: string | null): UserRole {
   return role === "admin" ? "admin" : "user";
 }
+
+export function isAdmin(role?: string | null): boolean {
+  return role === "admin";
+}
