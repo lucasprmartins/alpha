@@ -563,7 +563,7 @@ function UserRow({
               )}
             </span>
             {user.banReason && banned && (
-              <span className="text-error/70 text-xs italic">
+              <span className="whitespace-normal text-error/70 text-xs italic">
                 "{user.banReason}"
               </span>
             )}
@@ -993,7 +993,7 @@ export function AdminPage() {
             <EmptyState />
           ) : (
             <div className="overflow-x-auto rounded-xl border border-base-300/60">
-              <table className="table">
+              <table className="table whitespace-nowrap">
                 <thead>
                   <tr className="text-base-content/40">
                     <th>Nome</th>
