@@ -360,11 +360,20 @@ function RolePopover({
       return;
     }
     const rect = trigger.getBoundingClientRect();
-    setPos({
-      top: rect.bottom + 4,
-      left: rect.left,
-      width: Math.max(rect.width, 160),
-    });
+    const menuHeight = menuRef.current?.offsetHeight ?? 0;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const placeAbove = spaceBelow < menuHeight + 8 && rect.top > spaceBelow;
+    const top = Math.max(
+      8,
+      placeAbove ? rect.top - menuHeight - 4 : rect.bottom + 4
+    );
+    const left = rect.left;
+    const width = Math.max(rect.width, 160);
+    setPos((prev) =>
+      prev.top === top && prev.left === left && prev.width === width
+        ? prev
+        : { top, left, width }
+    );
   }, [open]);
 
   useEffect(() => {
