@@ -1,18 +1,13 @@
 import { UserMenu } from "@app/auth/client/components/UserMenu";
-import { sessionOptions } from "@app/auth/client/config";
 import { SidebarSimpleIcon } from "@phosphor-icons/react";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { HeaderLogo } from "@/components/ui/header-logo";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { getMenuItems, NAV_ACTIVE_CLASS } from "@/routes/-navigation";
+import { menuItems, NAV_ACTIVE_CLASS } from "@/routes/-navigation";
 
 const DRAWER_ID = "app-sidebar";
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
-  const { data: session } = useQuery(sessionOptions);
-  const menuItems = getMenuItems(session?.user.role);
-
   return (
     <div className="drawer lg:drawer-open">
       <input className="drawer-toggle" id={DRAWER_ID} type="checkbox" />
