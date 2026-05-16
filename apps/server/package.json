@@ -14,11 +14,11 @@
     "@app/api": "workspace:*",
     "@app/auth": "workspace:*",
     "elysia": "^1.4.28",
-    "elysia-rate-limit": "^4.6.1",
+    "elysia-rate-limit": "^4.6.2",
     "@elysiajs/cors": "^1.4.2"
   },
   "devDependencies": {
     "typescript": "^6.0.3",
-    "@types/bun": "^1.3.13"
+    "@types/bun": "^1.3.14"
   }
 }
