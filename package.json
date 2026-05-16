@@ -2,7 +2,7 @@
   "name": "alpha",
   "type": "module",
   "private": true,
-  "packageManager": "bun@1.3.13",
+  "packageManager": "bun@1.3.14",
   "workspaces": [
     "config",
     "apps/*",
