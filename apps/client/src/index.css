@@ -1,7 +1,7 @@
 @import "@fontsource-variable/geist";
 @import "tailwindcss";
 @source "../../../modules/";
-@plugin "daisyui/index.js" {
+@plugin "daisyui" {
   themes:
     light --default,
     dark;
