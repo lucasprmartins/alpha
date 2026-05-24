@@ -104,12 +104,3 @@ jobs:
 
       - name: Build all packages
         run: bun run build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: |
-            apps/client/dist
-            apps/server/server
-          retention-days: 7
