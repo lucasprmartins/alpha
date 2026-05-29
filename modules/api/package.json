@@ -12,11 +12,11 @@
   "dependencies": {
     "@app/auth": "workspace:*",
     "@app/db": "workspace:*",
-    "@orpc/client": "^1.14.3",
-    "@orpc/openapi": "^1.14.3",
-    "@orpc/server": "^1.14.3",
-    "@orpc/tanstack-query": "^1.14.3",
-    "@orpc/zod": "^1.14.3",
+    "@orpc/client": "^1.14.4",
+    "@orpc/openapi": "^1.14.4",
+    "@orpc/server": "^1.14.4",
+    "@orpc/tanstack-query": "^1.14.4",
+    "@orpc/zod": "^1.14.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
