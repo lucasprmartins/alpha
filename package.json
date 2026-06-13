@@ -26,7 +26,6 @@
     "db:push": "cd modules/db && bun db:push",
     "db:generate": "cd modules/db && bun db:generate",
     "db:migrate": "cd modules/db && bun db:migrate",
-    "db:users": "cd modules/auth && bun db:users",
     "db:studio": "cd modules/db && bun db:studio",
     "s3": "docker compose up -d --wait minio minio-init",
     "typecheck": "turbo typecheck",
@@ -40,14 +39,14 @@
     "zod": "^4.3.6"
   },
   "dependencies": {
-    "turbo": "^2.9.16"
+    "turbo": "^2.9.18"
   },
   "devDependencies": {
     "typescript": "^6.0.3",
     "@types/bun": "^1.3.14",
     "@biomejs/biome": "2.4.12",
     "ultracite": "7.6.1",
-    "@clack/prompts": "^1.5.0",
+    "@clack/prompts": "^1.5.1",
     "picocolors": "^1.1.1"
   }
 }

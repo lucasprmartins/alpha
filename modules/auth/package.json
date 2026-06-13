@@ -11,14 +11,13 @@
     "./*": "./src/*.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "db:users": "bun --env-file=../../apps/server/.env src/seed.ts"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@app/db": "workspace:*",
-    "@better-auth/drizzle-adapter": "^1.6.11",
-    "@better-auth/i18n": "^1.6.11",
-    "better-auth": "^1.6.11"
+    "@better-auth/drizzle-adapter": "^1.6.18",
+    "@better-auth/i18n": "^1.6.18",
+    "better-auth": "^1.6.18"
   },
   "devDependencies": {
     "@app/config": "workspace:*",
@@ -26,9 +25,9 @@
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
-    "react": "^19.2.6",
-    "@tanstack/react-query": "^5.100.14",
-    "@tanstack/react-router": "^1.170.9",
+    "react": "^19.2.7",
+    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-router": "^1.170.15",
     "@phosphor-icons/react": "^2.1.10"
   }
 }
