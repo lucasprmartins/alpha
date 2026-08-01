@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/biome/core", "ultracite/biome/react"],
+  "files": {
+    // Migrations e snapshots são gerados pelo drizzle-kit e não devem ser reformatados.
+    "includes": ["!modules/db/src/migrations"]
+  },
   "assist": {
     "actions": {
       "source": {
