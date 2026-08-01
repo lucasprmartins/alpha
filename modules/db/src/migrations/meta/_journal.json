@@ -15,6 +15,13 @@
       "when": 1777812558920,
       "tag": "0001_set_timezone",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785589543518,
+      "tag": "0002_task",
+      "breakpoints": true
     }
   ]
 }
