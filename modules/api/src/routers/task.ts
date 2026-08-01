@@ -8,6 +8,7 @@ import {
   ListTasks,
   ReopenTask,
   StartTask,
+  UpdateTask,
 } from "@domain/application/Task";
 import type { Task } from "@domain/entities/Task";
 import { TaskNotFoundError } from "@domain/entities/Task";
@@ -77,6 +78,49 @@ const listTasks = base
     const tasks = await new ListTasks(taskRepository).execute();
     logger.debug({ count: tasks.length }, "listTasks output");
     return tasks.map(toResponse);
+  });
+
+const updateTask = base
+  .route({
+    method: "PATCH",
+    path: "/tasks/{id}",
+    summary: "Atualizar tarefa",
+    description:
+      "Atualiza os campos informados de uma tarefa ativa. Campos omitidos permanecem inalterados.",
+    tags: ["tasks"],
+  })
+  .input(
+    z.object({
+      id: z.string().describe("ID da tarefa"),
+      title: z.string().optional().describe("Título da tarefa"),
+      description: z
+        .string()
+        .nullable()
+        .optional()
+        .describe("Descrição, ou null para limpar"),
+      priority: z
+        .enum(["low", "medium", "high", "urgent"])
+        .optional()
+        .describe("Prioridade"),
+      dueDate: z.coerce
+        .date()
+        .nullable()
+        .optional()
+        .describe("Data limite, ou null para remover"),
+    })
+  )
+  .handler(async ({ input, errors }) => {
+    logger.debug({ input }, "updateTask input");
+    const result = await new UpdateTask(taskRepository).execute(input);
+    if (!result.ok) {
+      if (result.error instanceof TaskNotFoundError) {
+        throw errors.NOT_FOUND({ data: { id: input.id } });
+      }
+      throw errors.BAD_REQUEST({ data: { message: result.error.message } });
+    }
+    const response = toResponse(result.value);
+    logger.debug({ task: response }, "updateTask output");
+    return response;
   });
 
 const startTask = base
@@ -203,6 +247,7 @@ const deleteTask = base
 export const taskRouter = {
   createTask,
   listTasks,
+  updateTask,
   startTask,
   completeTask,
   cancelTask,
