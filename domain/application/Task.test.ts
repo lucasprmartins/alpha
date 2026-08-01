@@ -14,7 +14,10 @@ import {
   ListTasks,
   ReopenTask,
   StartTask,
+  UpdateTask,
 } from "./Task";
+
+const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 function createInMemoryRepository(): TaskRepository {
   const tasks = new Map<string, Task>();
@@ -266,6 +269,127 @@ describe("ReopenTask", () => {
       return;
     }
     expect(result.error).toBeInstanceOf(InvalidTaskTransitionError);
+  });
+});
+
+describe("UpdateTask", () => {
+  it("atualiza título, descrição, prioridade e data limite", async () => {
+    const repo = createInMemoryRepository();
+    const task = createSeedTask();
+    await repo.create(task);
+    const dueDate = new Date(Date.now() + ONE_DAY_IN_MS);
+
+    const useCase = new UpdateTask(repo);
+    const result = await useCase.execute({
+      id: task.id,
+      title: "Tarefa revisada",
+      description: "Nova descrição",
+      priority: "high",
+      dueDate,
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.value.title).toBe("Tarefa revisada");
+    expect(result.value.description).toBe("Nova descrição");
+    expect(result.value.priority).toBe("high");
+    expect(result.value.dueDate).toEqual(dueDate);
+  });
+
+  it("mantém os campos não informados", async () => {
+    const repo = createInMemoryRepository();
+    const task = createSeedTask();
+    await repo.create(task);
+
+    const useCase = new UpdateTask(repo);
+    const result = await useCase.execute({ id: task.id, priority: "urgent" });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) {
+      return;
+    }
+    expect(result.value.priority).toBe("urgent");
+    expect(result.value.title).toBe("Tarefa seed");
+    expect(result.value.description).toBeNull();
+  });
+
+  it("persiste a tarefa atualizada", async () => {
+    const repo = createInMemoryRepository();
+    const task = createSeedTask();
+    await repo.create(task);
+
+    const useCase = new UpdateTask(repo);
+    await useCase.execute({ id: task.id, title: "Persistida" });
+
+    const found = await repo.findById(task.id);
+    expect(found?.title).toBe("Persistida");
+  });
+
+  it("retorna erro para tarefa inexistente", async () => {
+    const repo = createInMemoryRepository();
+    const useCase = new UpdateTask(repo);
+
+    const result = await useCase.execute({
+      id: "inexistente",
+      title: "Qualquer",
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      return;
+    }
+    expect(result.error).toBeInstanceOf(TaskNotFoundError);
+  });
+
+  it("retorna erro para título inválido", async () => {
+    const repo = createInMemoryRepository();
+    const task = createSeedTask();
+    await repo.create(task);
+
+    const useCase = new UpdateTask(repo);
+    const result = await useCase.execute({ id: task.id, title: "  " });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      return;
+    }
+    expect(result.error).toBeInstanceOf(TaskValidationError);
+  });
+
+  it("retorna erro para data limite no passado", async () => {
+    const repo = createInMemoryRepository();
+    const task = createSeedTask();
+    await repo.create(task);
+
+    const useCase = new UpdateTask(repo);
+    const result = await useCase.execute({
+      id: task.id,
+      dueDate: new Date(Date.now() - ONE_DAY_IN_MS),
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      return;
+    }
+    expect(result.error).toBeInstanceOf(TaskValidationError);
+  });
+
+  it("retorna erro ao editar tarefa cancelada", async () => {
+    const repo = createInMemoryRepository();
+    const task = createSeedTask();
+    task.cancel("Engano");
+    await repo.create(task);
+
+    const useCase = new UpdateTask(repo);
+    const result = await useCase.execute({ id: task.id, title: "Novo título" });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      return;
+    }
+    expect(result.error).toBeInstanceOf(TaskValidationError);
   });
 });
 
